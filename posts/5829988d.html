@@ -40,9 +40,9 @@
       s.parentNode.insertBefore(hm, s);
     })();
     </script>
-<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Luckey" type="application/atom+xml">
-
+<meta name="generator" content="Hexo 5.4.2">
 <style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Luckey" type="application/atom+xml">
 </head>
 
 
@@ -659,21 +659,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-04-02
+                    2026-04-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    221
+                    487
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    2 分
                 </div>
                 
 
@@ -736,13 +736,70 @@ systemctl stop firewalld
 # 禁止开机启动防火墙
 systemctl disable firewalld
 #查看是否关闭防火墙
-systemctl status firewalld<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+systemctl status firewalld
+tar -zxvf ollama-linux-amd64.tgz -C /usr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <pre class="line-numbers language-none"><code class="language-none">grep -rl 交易日期不能为空<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <pre class="line-numbers language-none"><code class="language-none">lsof -i :端口号
 kill -9 线程号<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
+<h2 id="一-多版本JDK"><a href="#一-多版本JDK" class="headerlink" title="一.多版本JDK"></a>一.多版本JDK</h2><p>1.下载多个版本JDK依赖</p>
+<p>下载jdk1.8</p>
+<p>下载jdk11</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">alternatives <span class="token parameter variable">--install</span> /usr/bin/java <span class="token function">java</span> /usr/local/java/jdk1.8.0_152/bin/java 序号<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">alternatives <span class="token parameter variable">--config</span> <span class="token function">java</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>选择版本</p>
+<h2 id="二-防火墙"><a href="#二-防火墙" class="headerlink" title="二.防火墙"></a>二.防火墙</h2><p>设置防火墙允许http服务</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd --add-service<span class="token operator">=</span>http <span class="token parameter variable">--permanent</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>设置防火墙打开8080端口</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd --add-port<span class="token operator">=</span><span class="token number">8080</span>/tcp <span class="token parameter variable">--permanent</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>命令重启防火墙</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--reload</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>看防火墙开启还是关闭</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">systemctl status firewalld.service<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>可以查看端口开放情况</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd --list-all<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="三-shell脚本"><a href="#三-shell脚本" class="headerlink" title="三.shell脚本"></a>三.shell脚本</h2><p>赋权限</p>
+<p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">chmod</span> u+x 文件名称<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>基本脚本</p>
+<p>java</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">#<span class="token operator">!</span><span class="token operator">/</span>bin<span class="token operator">/</span>bash
+<span class="token constant">PID</span><span class="token operator">=</span>$<span class="token punctuation">(</span>ps <span class="token operator">-</span>ef <span class="token operator">|</span> grep fn<span class="token operator">-</span>safeedu <span class="token operator">|</span> grep <span class="token operator">-</span>v grep <span class="token operator">|</span> awk '<span class="token punctuation">{</span> print $<span class="token number">2</span> <span class="token punctuation">}</span>'<span class="token punctuation">)</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">-</span>z <span class="token string">"$PID"</span> <span class="token punctuation">]</span>
+then
+    echo <span class="token class-name">Application</span> is  stopped
+<span class="token keyword">else</span>
+    echo kill $<span class="token constant">PID</span>
+    kill <span class="token operator">-</span><span class="token number">9</span> $<span class="token constant">PID</span>
+    rm <span class="token operator">-</span>rf <span class="token operator">/</span>root<span class="token operator">/</span>xxoo
+fi
+source <span class="token operator">/</span>etc<span class="token operator">/</span>profile<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="四-后端运行java"><a href="#四-后端运行java" class="headerlink" title="四.后端运行java"></a>四.后端运行java</h2><p>shell</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">nohup</span> <span class="token function">java</span> <span class="token parameter variable">-jar</span> /root/xxoo/fn-safeedu*.jar <span class="token operator">&gt;</span>my.log.log <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">&amp;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>来源: 个人笔记<br>文章作者: 青山<br>文章链接: <a target="_blank" rel="noopener" href="http://122.152.237.173/posts/4e543b07.html">http://122.152.237.173/posts/4e543b07.html</a><br>本文章著作权归作者所有，任何形式的转载都请注明出处。</p>
 
                 
             </div>
@@ -1598,7 +1655,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">16.6k</span>&nbsp;字
+                class="white-color">89.7k</span>&nbsp;字
             
             
             

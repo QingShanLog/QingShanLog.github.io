@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="demo, luckyzmj 计算机 网络安全 渗透测试">
+    <meta name="keywords" content="MYSQL总结, luckyzmj 计算机 网络安全 渗透测试">
     <meta name="description" content="本科 | 计算机科学与技术 | 网络安全">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>demo | Luckey</title>
+    <title>MYSQL总结 | Luckey</title>
 
     <link rel="icon" type="image/jpeg" href="https://s1.ax1x.com/2020/05/17/YR20js.jpg">
 
@@ -40,9 +40,9 @@
       s.parentNode.insertBefore(hm, s);
     })();
     </script>
-<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Luckey" type="application/atom+xml">
-
+<meta name="generator" content="Hexo 5.4.2">
 <style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Luckey" type="application/atom+xml">
 </head>
 
 
@@ -510,12 +510,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://cdn.jsdelivr.net/gh/LuckyZmj/imgbed@master/posts/20200928013834.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img2.huashi6.com/images/resource/thumbnail/2024/09/03/14355_43567397995.jpg?imageMogr2/quality/100/interlace/1/thumbnail/2000x%3E')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">demo</h1>
+                    <h1 class="description center-align post-title">MYSQL总结</h1>
                 </div>
             </div>
         </div>
@@ -648,28 +648,28 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2026-04-02
+                    2026-04-03
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-04-02
+                    2026-04-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    534
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    2 分
                 </div>
                 
 
@@ -687,7 +687,99 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p><img src="/posts/d642dfa0.htm/image-20260402134945105.png" alt="image-20260402134945105"></p>
+                <h2 id="第一章-优化SQL"><a href="#第一章-优化SQL" class="headerlink" title="第一章 优化SQL"></a>第一章 优化SQL</h2><h3 id="一-定位慢SQL语句"><a href="#一-定位慢SQL语句" class="headerlink" title="一.定位慢SQL语句"></a>一.定位慢SQL语句</h3><p>1.开启慢查询日志</p>
+<p>2.使用show processlist</p>
+<h3 id="二-慢查询日志"><a href="#二-慢查询日志" class="headerlink" title="二.慢查询日志"></a>二.慢查询日志</h3><h4 id="2-1概述"><a href="#2-1概述" class="headerlink" title="2.1概述"></a>2.1概述</h4><p> 慢查询日志用来记录在 MySQL 中执行时间超过指定时间的查询语句。 通过慢查询日志，可以查找出哪些查询语句的执行效率低，以便进行优化。</p>
+<p> 慢查询日志是在SQL执行完毕之后通过设置阈值，来定位慢SQL.</p>
+<h4 id="2-2开启慢查询日志"><a href="#2-2开启慢查询日志" class="headerlink" title="2.2开启慢查询日志"></a>2.2开启慢查询日志</h4><p>默认，MySQL的慢查询日志功能是关闭的。</p>
+<p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'slow_query%'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220920161138492.png" alt="image-20220920161138492"></p>
+<p><strong>image-20220920161138492</strong></p>
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220920161217110.png" alt="image-20220920161217110"></p>
+<p><strong>image-20220920161217110</strong></p>
+<p>开启MySQL的慢查询日志功能</p>
+<p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">set</span> <span class="token keyword">global</span> slow_query_log <span class="token operator">=</span><span class="token string">'ON'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220920161537634.png" alt="image-20220920161537634"></p>
+<p><strong>image-20220920161537634</strong></p>
+<h4 id="2-3设置慢查询超时时间"><a href="#2-3设置慢查询超时时间" class="headerlink" title="2.3设置慢查询超时时间"></a>2.3设置慢查询超时时间</h4><p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'long_query_time%'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220920172710326.png" alt="image-20220920172710326"></p>
+<p><strong>image-20220920172710326</strong></p>
+<p>long_query_time 默认为 10s。生产环境下，如果 SQL 的执行时间超过 1s，我们可以认为这条 SQL是比较慢，我们将long_query_time的值改为 2s</p>
+<p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">set</span> <span class="token keyword">global</span> long_query_time <span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220920172807311.png" alt="image-20220920172807311"></p>
+<p><strong>image-20220920172807311</strong></p>
+<p>对于当前会话窗口，查看long_query_time值没有更新。我们需要新开一个会话窗口，可以查询到更新后的值。</p>
+<h4 id="2-3测试慢查询"><a href="#2-3测试慢查询" class="headerlink" title="2.3测试慢查询"></a>2.3测试慢查询</h4><p>执行一个3秒查询</p>
+<p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> sleep<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220920172946684.png" alt="image-20220920172946684"></p>
+<p><strong>image-20220920172946684</strong></p>
+<h4 id="2-4查看日志"><a href="#2-4查看日志" class="headerlink" title="2.4查看日志"></a>2.4查看日志</h4><p>none</p>
+<pre class="line-numbers language-none"><code class="language-none">[root@node1 ~]# cat  /var/lib/mysql/node1-slow.log
+/usr/sbin/mysqld, Version: 8.0.27 (MySQL Community Server - GPL). started with:
+Tcp port: 3306  Unix socket: /var/lib/mysql/mysql.sock
+Time                 Id Command    Argument
+# Time: 2021-11-14T19:41:41.225465Z
+# User@Host: root[root] @ localhost []  Id:    31
+# Query_time: 3.003578  Lock_time: 0.000000 Rows_sent: 1  Rows_examined: 1
+SET timestamp=1636918898;
+select sleep(3);
+[root@node1 ~]# <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-5慢日志分析工具-mysqldumpslow"><a href="#2-5慢日志分析工具-mysqldumpslow" class="headerlink" title="2.5慢日志分析工具-mysqldumpslow"></a>2.5慢日志分析工具-mysqldumpslow</h4><p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token punctuation">[</span>root<span class="token variable">@node1</span> <span class="token operator">~</span><span class="token punctuation">]</span><span class="token comment"># mysqldumpslow -s at -t 1 /var/lib/mysql/node1-slow.log</span>
+
+Reading mysql slow query log <span class="token keyword">from</span> <span class="token operator">/</span>var<span class="token operator">/</span>lib<span class="token operator">/</span>mysql<span class="token operator">/</span>node1<span class="token operator">-</span>slow<span class="token punctuation">.</span>log
+Count: <span class="token number">3</span>  <span class="token keyword">Time</span><span class="token operator">=</span><span class="token number">8.00</span>s <span class="token punctuation">(</span><span class="token number">24</span>s<span class="token punctuation">)</span>  <span class="token keyword">Lock</span><span class="token operator">=</span><span class="token number">0.00</span>s <span class="token punctuation">(</span><span class="token number">0</span>s<span class="token punctuation">)</span>  <span class="token keyword">Rows</span><span class="token operator">=</span><span class="token number">1.0</span> <span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> root<span class="token punctuation">[</span>root<span class="token punctuation">]</span><span class="token variable">@localhost</span>
+  <span class="token keyword">select</span> sleep<span class="token punctuation">(</span>N<span class="token punctuation">)</span>
+
+<span class="token punctuation">[</span>root<span class="token variable">@node1</span> <span class="token operator">~</span><span class="token punctuation">]</span><span class="token comment"># </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-6重启失效"><a href="#2-6重启失效" class="headerlink" title="2.6重启失效"></a>2.6重启失效</h4><p>重启MySQL服务之后，上面相关设置丢失。</p>
+<h4 id="2-7配置文件方式"><a href="#2-7配置文件方式" class="headerlink" title="2.7配置文件方式"></a>2.7配置文件方式</h4><p>none</p>
+<pre class="line-numbers language-none"><code class="language-none">[root@node1 ~]# vi /etc/my.cnf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>在[mysqld]最后添加</p>
+<p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">slow<span class="token operator">-</span>query<span class="token operator">-</span>log <span class="token operator">=</span> <span class="token keyword">on</span>
+long_query_time <span class="token operator">=</span> <span class="token number">2</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+
+
+<p>none</p>
+<pre class="line-numbers language-none"><code class="language-none">然后重启MySQL服务<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="三-show-processlist-检测正在运行的sql"><a href="#三-show-processlist-检测正在运行的sql" class="headerlink" title="三.show processlist 检测正在运行的sql"></a>三.show processlist 检测正在运行的sql</h3><p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">show</span> processlist<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220917115051691.png" alt="img"></p>
+<p><strong>img</strong></p>
+<h3 id="四-EXPLAIN-分析执行计划"><a href="#四-EXPLAIN-分析执行计划" class="headerlink" title="四.EXPLAIN 分析执行计划"></a>四.EXPLAIN 分析执行计划</h3><p>在查询语句前面添加 explain</p>
+<p>sql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">explain</span> <span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> demo<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220917115247766.png" alt="img"></p>
+<p><strong>img</strong></p>
+<p>1.优化 使用key</p>
+<p>2.优化 type</p>
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220917121647486.png" alt="img"></p>
+<p><strong>img</strong></p>
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220917122238355.png" alt="img"></p>
+<p><strong>img</strong></p>
+<p>3.优化extra</p>
+<p><img src="../images/MYSQL%E6%80%BB%E7%BB%93/image-20220917122443224.png" alt="img"></p>
+<p><strong>img</strong></p>
 
                 
             </div>
@@ -714,7 +806,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://www.luckyzmj.cn/posts/d642dfa0.html">http://www.luckyzmj.cn/posts/d642dfa0.html</a>
+                    <a href="http://www.luckyzmj.cn/posts/1bb02b5e.html">http://www.luckyzmj.cn/posts/1bb02b5e.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1221,18 +1313,16 @@ new Valine({
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/d642dfa0.html">
+                <a href="/posts/b543ced0.html">
                     <div class="card-image">
                         
+                        <img src="https://upload-bbs.miyoushe.com/upload/2024/06/25/279354079/5c762bf74df0f73a191130a74ceb261b_5868151804857059327.jpg?x-oss-process=image//resize,s_500/quality,q_80/auto-orient,0/interlace,1/format,jpg" class="responsive-img" alt="RabbitMQ">
                         
-                        <img src="https://cdn.jsdelivr.net/gh/LuckyZmj/imgbed@master/posts/20200928013834.jpg" class="responsive-img" alt="demo">
-                        
-                        <span class="card-title">demo</span>
+                        <span class="card-title">RabbitMQ</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1242,18 +1332,21 @@ new Valine({
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-04-02
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-04-03
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            Luckey
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/MQ/" class="post-category">
+                                    MQ
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
@@ -1264,12 +1357,12 @@ new Valine({
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/c10d2ede.html">
+                <a href="/posts/d6df42ba.html">
                     <div class="card-image">
                         
-                        <img src="https://ts3.tc.mm.bing.net/th/id/OIP-C.Qm9aT1zzLJFbXTrzBiM6CgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" class="responsive-img" alt="Ollama">
+                        <img src="https://img0.baidu.com/it/u=2348550546,1143122627&fm=253&app=138&f=JPEG?w=800&h=1411" class="responsive-img" alt="MYSQL高级">
                         
-                        <span class="card-title">Ollama</span>
+                        <span class="card-title">MYSQL高级</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1280,23 +1373,19 @@ new Valine({
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-04-02
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-04-03
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            Luckey
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/mysql/" class="post-category">
+                                    mysql
+                                </a>
+                            
                             
                         </span>
                     </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-                        <span class="chip bg-color">私有化大模型</span>
-                    </a>
-                    
                 </div>
                 
             </div>
@@ -1534,7 +1623,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">16.6k</span>&nbsp;字
+                class="white-color">89.7k</span>&nbsp;字
             
             
             

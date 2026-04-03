@@ -40,9 +40,9 @@
       s.parentNode.insertBefore(hm, s);
     })();
     </script>
-<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Luckey" type="application/atom+xml">
-
+<meta name="generator" content="Hexo 5.4.2">
 <style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Luckey" type="application/atom+xml">
 </head>
 
 
@@ -666,7 +666,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    80
+                    401
                 </div>
                 
 
@@ -695,14 +695,126 @@
 <p>启动大型语言模型（如gpt-oss、Gemma 3、DeepSeek-R1、Qwen3等）最简单的方式。</p>
 <h2 id="1-1windows安装"><a href="#1-1windows安装" class="headerlink" title="1.1windows安装"></a>1.1windows安装</h2><p>官网</p>
 <p><a target="_blank" rel="noopener" href="https://ollama.com/">https://ollama.com/</a></p>
-<p><img src="./images/Ollama/image-20260402140311686.png" alt="image-20260402140311686"></p>
+<p><img src="/images/Ollama/image-20260402141035425.png" alt="image-20260402141035425"></p>
 <pre class="line-numbers language-none"><code class="language-none">验证安装成功
 win+R cmd
 ollama -v
 版本号
 即安装成功<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="1-2linux安装"><a href="#1-2linux安装" class="headerlink" title="1.2linux安装"></a>1.2linux安装</h2>
+<h2 id="1-2linux安装"><a href="#1-2linux安装" class="headerlink" title="1.2linux安装"></a>1.2linux安装</h2><p>上传安装包</p>
+<pre class="line-numbers language-none"><code class="language-none">tar -zxvf ollama-linux-amd64.tgz -C /usr  --解压<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">sudo yum install zstd
+curl -fsSL https://ollama.com/install.sh | sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>开启远程访问</p>
+<pre class="line-numbers language-none"><code class="language-none">vim /etc/profile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">export OLLAMA_HOST=0.0.0.0:11434
+export OLLAMA_ORIGINS=*
+export OLLAMA_MODELS=/root/ollama<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">source /etc/profile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>配置环境变量和开机自启动</p>
+<pre class="line-numbers language-none"><code class="language-none">vim /etc/systemd/system/ollama.service<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ollama serve
+User=root
+Group=root
+Restart=always
+RestartSec=3
+Environment="OLLAMA_MODELS=/root/ollama"
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+Environment="OLLAMA_ORIGINS=*"
+
+[Install]
+WantedBy=default.target<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">sudo systemctl daemon-reload
+sudo systemctl enable ollama<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">sudo systemctl start ollama<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">sudo systemctl status ollama<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h1 id="2-模型下载"><a href="#2-模型下载" class="headerlink" title="2.模型下载"></a>2.模型下载</h1><p><img src="/images/Ollama/image-20260402142507686.png" alt="image-20260402142507686"></p>
+<p><img src="/images/Ollama/image-20260402142716599.png" alt="image-20260402142716599"></p>
+<pre class="line-numbers language-none"><code class="language-none">ollama run qwen2:0.5b<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h1 id="3-Ollama-指令"><a href="#3-Ollama-指令" class="headerlink" title="3.Ollama 指令"></a>3.Ollama 指令</h1><h2 id="3-1对话指令"><a href="#3-1对话指令" class="headerlink" title="3.1对话指令"></a>3.1对话指令</h2><p><img src="/images/Ollama/image-20260402174344141.png" alt="image-20260402174344141"></p>
+<pre class="line-numbers language-none"><code class="language-none">/?  查看帮助
+/bye 退出
+/show 查看信息
+/load 加载模型
+/save 保持模型
+/clear 清屏<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/images/Ollama/image-20260402174506399.png" alt="image-20260402174506399"></p>
+<pre class="line-numbers language-none"><code class="language-none">"""
+"""   换行输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="/images/Ollama/image-20260402175547425.png" alt="image-20260402175547425"></p>
+<pre class="line-numbers language-none"><code class="language-none">/set<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/images/Ollama/image-20260402180001749.png" alt="image-20260402180001749"></p>
+<pre class="line-numbers language-none"><code class="language-none">/load 模型  模型切换
+/save 名称  保存新模型<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="3-2客户端指令"><a href="#3-2客户端指令" class="headerlink" title="3.2客户端指令"></a>3.2客户端指令</h2><pre class="line-numbers language-none"><code class="language-none">run 运行模型
+show 显示模型信息
+pull 下载模型
+list 查看本地模型
+ps 查看运行的模式
+cp 复制模型
+rm 删除模型<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="4-OllamaApi"><a href="#4-OllamaApi" class="headerlink" title="4.OllamaApi"></a>4.OllamaApi</h1><p><img src="/images/Ollama/image-20260402191122365.png" alt="image-20260402191122365"></p>
+<p>请求参数</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"qwen2:0.5b"</span><span class="token punctuation">,</span>
+    <span class="token property">"messages"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+            <span class="token property">"role"</span><span class="token operator">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+            <span class="token property">"content"</span><span class="token operator">:</span> <span class="token string">"你是谁?"</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"stream"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+    
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>输出参数</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"qwen2:0.5b"</span><span class="token punctuation">,</span>
+    <span class="token property">"created_at"</span><span class="token operator">:</span> <span class="token string">"2026-04-02T11:10:49.0458108Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"message"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"role"</span><span class="token operator">:</span> <span class="token string">"assistant"</span><span class="token punctuation">,</span>
+        <span class="token property">"content"</span><span class="token operator">:</span> <span class="token string">"我是来自AI的聊天机器人，我叫艾丽卡。"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"done"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">"done_reason"</span><span class="token operator">:</span> <span class="token string">"stop"</span><span class="token punctuation">,</span>
+    <span class="token property">"total_duration"</span><span class="token operator">:</span> <span class="token number">169410000</span><span class="token punctuation">,</span>
+    <span class="token property">"load_duration"</span><span class="token operator">:</span> <span class="token number">116366700</span><span class="token punctuation">,</span>
+    <span class="token property">"prompt_eval_count"</span><span class="token operator">:</span> <span class="token number">11</span><span class="token punctuation">,</span>
+    <span class="token property">"prompt_eval_duration"</span><span class="token operator">:</span> <span class="token number">2857700</span><span class="token punctuation">,</span>
+    <span class="token property">"eval_count"</span><span class="token operator">:</span> <span class="token number">14</span><span class="token punctuation">,</span>
+    <span class="token property">"eval_duration"</span><span class="token operator">:</span> <span class="token number">38080200</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="5-chatBox与Ollama搭建"><a href="#5-chatBox与Ollama搭建" class="headerlink" title="5.chatBox与Ollama搭建"></a>5.chatBox与Ollama搭建</h1><p>官网<a target="_blank" rel="noopener" href="https://chatbox.app/">chatbox.app</a></p>
+<p>可视化界面</p>
+<p><img src="/images/Ollama/image-20260402193131819.png" alt="image-20260402193131819"></p>
+
                 
             </div>
             <hr/>
@@ -1243,13 +1355,12 @@ new Valine({
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/d642dfa0.html">
+                <a href="/posts/518e617c.html">
                     <div class="card-image">
                         
+                        <img src="https://upload-bbs.miyoushe.com/upload/2024/07/17/292762008/3fbf691daca11028be2e17a204ecc093_5564955111781322636.jpg" class="responsive-img" alt="git">
                         
-                        <img src="https://cdn.jsdelivr.net/gh/LuckyZmj/imgbed@master/posts/20200928013834.jpg" class="responsive-img" alt="demo">
-                        
-                        <span class="card-title">demo</span>
+                        <span class="card-title">git</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1260,7 +1371,7 @@ new Valine({
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-04-02
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-04-03
                         </span>
                         <span class="publish-author">
                             
@@ -1269,6 +1380,14 @@ new Valine({
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/git/">
+                        <span class="chip bg-color">git</span>
+                    </a>
+                    
                 </div>
                 
             </div>
@@ -1550,7 +1669,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">16.6k</span>&nbsp;字
+                class="white-color">89.7k</span>&nbsp;字
             
             
             
