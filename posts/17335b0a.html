@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="linux学习, luckyzmj 计算机 网络安全 渗透测试">
+    <meta name="keywords" content="Prompt-langChain, luckyzmj 计算机 网络安全 渗透测试">
     <meta name="description" content="本科 | 计算机科学与技术 | 网络安全">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>linux学习 | Luckey</title>
+    <title>Prompt-langChain | Luckey</title>
 
     <link rel="icon" type="image/jpeg" href="https://s1.ax1x.com/2020/05/17/YR20js.jpg">
 
@@ -510,12 +510,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://upload-bbs.miyoushe.com/upload/2023/11/09/337867353/8da748879264ec6928792e7dc667f2fa_3019046640558712665.jpg?x-oss-process=image/resize,s_600/quality,q_80/auto-orient,0/interlace,1/format,jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://haowallpaper.com/link//common/file/previewFileImg/17063145719188864')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">linux学习</h1>
+                    <h1 class="description center-align post-title">Prompt-langChain</h1>
                 </div>
             </div>
         </div>
@@ -636,8 +636,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/linux/">
-                                <span class="chip bg-color">linux</span>
+                            <a href="/tags/langchain/">
+                                <span class="chip bg-color">-langchain</span>
                             </a>
                         
                     </div>
@@ -652,28 +652,28 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2026-04-02
+                    2026-06-28
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-04-03
+                    2026-06-28
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    487
+                    1.3k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    2 分
+                    6 分
                 </div>
                 
 
@@ -691,115 +691,226 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="1-linux-固定IP"><a href="#1-linux-固定IP" class="headerlink" title="1.linux 固定IP"></a>1.linux 固定IP</h1><p>进入配置页面</p>
-<pre class="line-numbers language-none"><code class="language-none">vim /etc/sysconfig/network-scripts/ifcfg-ens33<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+                <h1 id="1-模板创建方式"><a href="#1-模板创建方式" class="headerlink" title="1.模板创建方式"></a>1.模板创建方式</h1><p>ChatPromptTemplate.from_messages()  –推荐</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"ai"</span><span class="token punctuation">,</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"{user_input}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
 
-<p>配置样例</p>
-<pre class="line-numbers language-none"><code class="language-none">TYPE="Ethernet"
-PROXY_METHOD="none"
-BROWSER_ONLY="no"
-BOOTPROTO="static"
-DEFROUTE="yes"
-IPV4_FAILURE_FATAL="no"
-IPV6INIT="yes"
-IPV6_AUTOCONF="yes"
-IPV6_DEFROUTE="yes"
-IPV6_FAILURE_FATAL="no"
-IPV6_ADDR_GEN_MODE="stable-privacy"
-NAME="ens33"
-UUID="a47452cd-f124-445e-a700-77863a40c560"
-DEVICE="ens33"
-ONBOOT="yes"
-IPADDR="192.168.200.141"
-NETMAST="255.255.255.0"
-GATEWAY="192.168.200.2"
-DNS1="8.8.8.8"
-DNS2="114.114.114.114"
-PEERDNS="no"
-ZONE=public<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">#调用</span>
+result <span class="token operator">=</span> chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">,</span> <span class="token string">"user_input"</span><span class="token punctuation">:</span> <span class="token string">"1+1=?"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+outPut <span class="token operator">=</span> model<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>outPut<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>重启网卡</p>
-<pre class="line-numbers language-none"><code class="language-none">service network restart <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>ChatPromptTemplate()</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"ai"</span><span class="token punctuation">,</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"{user_input}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
 
-<h1 id="2-常用命令"><a href="#2-常用命令" class="headerlink" title="2.常用命令"></a>2.常用命令</h1><pre class="line-numbers language-none"><code class="language-none">ll  查看文件列表
-ll -lrt 文件列表按时间排序
-grep -rl ERROR 查看错误日志
-view 查看日志
-mkdir 创建文件夹
-touch 创建文件
-shift +G 到最后一页
-Ctrl + f：向下翻页快捷键(下一页)
-Ctrl + b：向上翻页快捷键(上一页)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">#调用</span>
+result <span class="token operator">=</span> chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">,</span> <span class="token string">"user_input"</span><span class="token punctuation">:</span> <span class="token string">"1+1=?"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
 
-<pre class="line-numbers language-none"><code class="language-none"># 关闭
-systemctl stop firewalld
-# 禁止开机启动防火墙
-systemctl disable firewalld
-#查看是否关闭防火墙
-systemctl status firewalld
-tar -zxvf ollama-linux-amd64.tgz -C /usr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token keyword">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<pre class="line-numbers language-none"><code class="language-none">grep -rl 交易日期不能为空<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h1 id="2-初始化参数类型"><a href="#2-初始化参数类型" class="headerlink" title="2.初始化参数类型"></a>2.初始化参数类型</h1><h2 id="1-str-类型"><a href="#1-str-类型" class="headerlink" title="1.str 类型"></a>1.str 类型</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"你好,我是{name}"</span><span class="token punctuation">)</span> <span class="token comment">#会理解一个用户消息</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-<pre class="line-numbers language-none"><code class="language-none">lsof -i :端口号
-kill -9 线程号<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<span class="token comment">#messages=[HumanMessage(content='你好,我是小白', additional_kwargs={}, response_metadata={})]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="一-多版本JDK"><a href="#一-多版本JDK" class="headerlink" title="一.多版本JDK"></a>一.多版本JDK</h2><p>1.下载多个版本JDK依赖</p>
-<p>下载jdk1.8</p>
-<p>下载jdk11</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">alternatives <span class="token parameter variable">--install</span> /usr/bin/java <span class="token function">java</span> /usr/local/java/jdk1.8.0_152/bin/java 序号<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="2-元组列表"><a href="#2-元组列表" class="headerlink" title="2.元组列表"></a>2.元组列表</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"ai"</span><span class="token punctuation">,</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"{user_input}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-字典消息"><a href="#3-字典消息" class="headerlink" title="3.字典消息"></a>3.字典消息</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">{</span><span class="token string">"role"</span> <span class="token punctuation">:</span> <span class="token string">"system"</span> <span class="token punctuation">,</span><span class="token string">"content"</span> <span class="token punctuation">:</span> <span class="token string">"你是一个友好的AI助手"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"role"</span> <span class="token punctuation">:</span> <span class="token string">"human"</span> <span class="token punctuation">,</span><span class="token string">"content"</span> <span class="token punctuation">:</span> <span class="token string">"你好,我是{name}"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是一个友好的AI助手', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好,我是小白', additional_kwargs={}, response_metadata={})]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="4-消息对象列表-变量声明失效"><a href="#4-消息对象列表-变量声明失效" class="headerlink" title="4.消息对象列表(变量声明失效)"></a>4.消息对象列表(变量声明失效)</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    SystemMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">'你是一个友好的AI助手'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    HumanMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">'你好,我是{name}'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是一个友好的AI助手', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好,我是{name}', additional_kwargs={}, response_metadata={})]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="5-消息对象列表-声明变量"><a href="#5-消息对象列表-声明变量" class="headerlink" title="5.消息对象列表 声明变量"></a>5.消息对象列表 声明变量</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> SystemMessagePromptTemplate
+
+system <span class="token operator">=</span> SystemMessagePromptTemplate<span class="token punctuation">.</span>from_template<span class="token punctuation">(</span><span class="token string">"你是一个友好的AI助手"</span><span class="token punctuation">)</span>
+human <span class="token operator">=</span> HumanMessagePromptTemplate<span class="token punctuation">.</span>from_template<span class="token punctuation">(</span><span class="token string">"你好,我是{name}"</span><span class="token punctuation">)</span>
+chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    system<span class="token punctuation">,</span>
+    human<span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment"># messages=[SystemMessage(content='你是一个友好的AI助手', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好,我是小白', additional_kwargs={}, response_metadata={})]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="6-嵌套"><a href="#6-嵌套" class="headerlink" title="6.嵌套"></a>6.嵌套</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">inner_chat1 <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+inner_chat2 <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span> <span class="token string">"你好,我是{name}"</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+messages <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>inner_chat1<span class="token punctuation">,</span> inner_chat2<span class="token punctuation">,</span> <span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>messages<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是一个友好的AI助手,你的名字叫小白', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好,我是小白', additional_kwargs={}, response_metadata={})]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="3-变量填充"><a href="#3-变量填充" class="headerlink" title="3.变量填充"></a>3.变量填充</h1><h2 id="1-invoke"><a href="#1-invoke" class="headerlink" title="1.invoke"></a>1.invoke</h2><p>#角色字符<br>system  系统消息 设定AI的行为,角色,规则</p>
+<p>user/human  用户消息 用户输入/问题</p>
+<p>ai/assistant  AI消息 AI的回答(用于对话历史)</p>
+<p>invoke 传入字典参数 返回 ChatPromptValue</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"ai"</span><span class="token punctuation">,</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"{user_input}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment">#调用</span>
+result <span class="token operator">=</span> chat_prompt_template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"小白"</span><span class="token punctuation">,</span> <span class="token string">"user_input"</span><span class="token punctuation">:</span> <span class="token string">"1+1=?"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-format"><a href="#2-format" class="headerlink" title="2.format"></a>2.format</h2><p>format 传入定值 返回str</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"ai"</span><span class="token punctuation">,</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"{user_input}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment">#调用</span>
+result <span class="token operator">=</span> chat_prompt_template<span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"小白"</span><span class="token punctuation">,</span> user_input<span class="token operator">=</span><span class="token string">"1+1=?"</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+System<span class="token punctuation">:</span> 你是一个友好的AI助手<span class="token punctuation">,</span>你的名字叫小白
+Human<span class="token punctuation">:</span> 你好<span class="token punctuation">,</span>最近怎么样?
+AI<span class="token punctuation">:</span> 我很好<span class="token punctuation">,</span>谢谢
+Human<span class="token punctuation">:</span> <span class="token number">1</span><span class="token operator">+</span><span class="token number">1</span><span class="token operator">=</span>?
+<span class="token operator">&lt;</span><span class="token keyword">class</span> <span class="token string">'str'</span><span class="token operator">&gt;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-from-messages"><a href="#3-from-messages" class="headerlink" title="3.from_messages"></a>3.from_messages</h2><p>format_messages 传入定值 返回list</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">chat_prompt_template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个友好的AI助手,你的名字叫{name}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"ai"</span><span class="token punctuation">,</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span><span class="token string">"{user_input}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment"># 传入定值参数 返回 list</span>
+messages <span class="token operator">=</span> chat_prompt_template<span class="token punctuation">.</span>format_messages<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"小白"</span><span class="token punctuation">,</span> user_input<span class="token operator">=</span><span class="token string">"1+1=?"</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>messages<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>messages<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">[</span>SystemMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">'你是一个友好的AI助手,你的名字叫小白'</span><span class="token punctuation">,</span> additional_kwargs<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> response_metadata<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span> HumanMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">'你好,最近怎么样?'</span><span class="token punctuation">,</span> additional_kwargs<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> response_metadata<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span> AIMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">'我很好,谢谢'</span><span class="token punctuation">,</span> additional_kwargs<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> response_metadata<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> tool_calls<span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> invalid_tool_calls<span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> HumanMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">'1+1=?'</span><span class="token punctuation">,</span> additional_kwargs<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> response_metadata<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+<span class="token operator">&lt;</span><span class="token keyword">class</span> <span class="token string">'list'</span><span class="token operator">&gt;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="高级特性"><a href="#高级特性" class="headerlink" title="高级特性"></a>高级特性</h1><h2 id="1-partial"><a href="#1-partial" class="headerlink" title="1.partial()"></a>1.partial()</h2><p>预填充某些固定不变的变量 :partial(</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> ChatPromptTemplate
+
+template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是{role},目标用户是{audience}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">,</span><span class="token string">"{task}"</span><span class="token punctuation">)</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+partial <span class="token operator">=</span> template<span class="token punctuation">.</span>partial<span class="token punctuation">(</span>role<span class="token operator">=</span><span class="token string">"导游"</span><span class="token punctuation">,</span> audience<span class="token operator">=</span><span class="token string">"游客"</span><span class="token punctuation">)</span>
+
+prompt_value1 <span class="token operator">=</span> partial<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"task"</span><span class="token punctuation">:</span> <span class="token string">"介绍一个北京的故宫"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+prompt_value2 <span class="token operator">=</span> partial<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"task"</span><span class="token punctuation">:</span> <span class="token string">"介绍一个北京的颐和园"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>prompt_value1<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>prompt_value2<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-Placeholder"><a href="#2-Placeholder" class="headerlink" title="2.Placeholder"></a>2.Placeholder</h2><p>消息占位符 多轮对话存储</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> ChatPromptTemplate
+
+template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个ai助手"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">"placeholder"</span><span class="token punctuation">,</span><span class="token string">"{conversation}"</span><span class="token punctuation">)</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+prompt_value <span class="token operator">=</span> template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+    <span class="token punctuation">{</span><span class="token string">"conversation"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">(</span><span class="token string">"human"</span> <span class="token punctuation">,</span> <span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">"ai"</span> <span class="token punctuation">,</span> <span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">"human"</span> <span class="token punctuation">,</span> <span class="token string">"1+1=?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">"ai"</span> <span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>prompt_value<span class="token punctuation">)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是一个ai助手', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好,最近怎么样?', additional_kwargs={}, response_metadata={}), AIMessage(content='我很好,谢谢', additional_kwargs={}, response_metadata={}, tool_calls=[], invalid_tool_calls=[]), HumanMessage(content='1+1=?', additional_kwargs={}, response_metadata={}), AIMessage(content='2', additional_kwargs={}, response_metadata={}, tool_calls=[], invalid_tool_calls=[])]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-MessagePlaceholder"><a href="#3-MessagePlaceholder" class="headerlink" title="3.MessagePlaceholder"></a>3.MessagePlaceholder</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> ChatPromptTemplate<span class="token punctuation">,</span> MessagesPlaceholder
+
+template <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是一个ai助手"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    MessagesPlaceholder<span class="token punctuation">(</span>variable_name<span class="token operator">=</span><span class="token string">"conversation"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+prompt_value <span class="token operator">=</span> template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+    <span class="token punctuation">{</span><span class="token string">"conversation"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        HumanMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">"你好,最近怎么样?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        AIMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">"我很好,谢谢"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        HumanMessage<span class="token punctuation">(</span>content<span class="token operator">=</span><span class="token string">"1+1=?"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">}</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>prompt_value<span class="token punctuation">)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是一个ai助手', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好,最近怎么样?', additional_kwargs={}, response_metadata={}), AIMessage(content='我很好,谢谢', additional_kwargs={}, response_metadata={}, tool_calls=[], invalid_tool_calls=[]), HumanMessage(content='1+1=?', additional_kwargs={}, response_metadata={})]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="可复用模板"><a href="#可复用模板" class="headerlink" title="可复用模板"></a>可复用模板</h1><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> ChatPromptTemplate
+<span class="token keyword">class</span> <span class="token class-name">PromptLibrary</span><span class="token punctuation">:</span>
+    TRANSLATOR <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+        <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"你是专业翻译,精通 {source_language} 和 {target_language}."</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span> <span class="token string">"翻译以下文本{text}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span>
+    CODE_REVIEWER <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+        <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span> <span class="token string">"你是一个{language}代码审查者,你需要检查以下代码,并给出建议重点关注{focus}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span> <span class="token string">"审查代码{language}\n{code}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span>
 
 
+translator <span class="token operator">=</span> PromptLibrary<span class="token punctuation">.</span>TRANSLATOR<span class="token punctuation">.</span>format_messages<span class="token punctuation">(</span>source_language<span class="token operator">=</span><span class="token string">"英文"</span><span class="token punctuation">,</span> target_language<span class="token operator">=</span><span class="token string">"中文"</span><span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"I love programming."</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>translator<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
+<h1 id="模板组合"><a href="#模板组合" class="headerlink" title="模板组合"></a>模板组合</h1><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#字符串组合</span>
+<span class="token comment"># from langchain_core.prompts import ChatPromptTemplate</span>
+<span class="token comment">#</span>
+<span class="token comment"># role_part = "你是{role},目标用户是{audience}"</span>
+<span class="token comment"># task_part = "回答风格{style}"</span>
+<span class="token comment"># full_system = role_part + task_part</span>
+<span class="token comment"># template = ChatPromptTemplate.from_messages([</span>
+<span class="token comment">#     ("system",full_system),</span>
+<span class="token comment">#     ("user","{question}")</span>
+<span class="token comment"># ])</span>
+<span class="token comment"># prompt_value = template.invoke({"role": "导演", "audience": "游客", "style": "温柔", "question": "你叫什么名字?"})</span>
+<span class="token comment"># print(prompt_value)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是导演,目标用户是游客回答风格温柔', additional_kwargs={}, response_metadata={}), HumanMessage(content='你叫什么名字?', additional_kwargs={}, response_metadata={})]</span>
+<span class="token comment">#使用运算符</span>
+<span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>prompts <span class="token keyword">import</span> ChatPromptTemplate
+template1 <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span><span class="token string">"你是{role},目标用户是{audience}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+template2 <span class="token operator">=</span> ChatPromptTemplate<span class="token punctuation">.</span>from_messages<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">,</span><span class="token string">"用户输入{style}"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+template <span class="token operator">=</span> template1 <span class="token operator">+</span> template2
+prompt_value <span class="token operator">=</span> template<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"导演"</span><span class="token punctuation">,</span> <span class="token string">"audience"</span><span class="token punctuation">:</span> <span class="token string">"游客"</span><span class="token punctuation">,</span> <span class="token string">"style"</span><span class="token punctuation">:</span> <span class="token string">"温柔"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>prompt_value<span class="token punctuation">)</span>
+<span class="token comment">#messages=[SystemMessage(content='你是导演,目标用户是游客', additional_kwargs={}, response_metadata={}), HumanMessage(content='用户输入温柔', additional_kwargs={}, response_metadata={})]</span>
 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">alternatives <span class="token parameter variable">--config</span> <span class="token function">java</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>选择版本</p>
-<h2 id="二-防火墙"><a href="#二-防火墙" class="headerlink" title="二.防火墙"></a>二.防火墙</h2><p>设置防火墙允许http服务</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd --add-service<span class="token operator">=</span>http <span class="token parameter variable">--permanent</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>设置防火墙打开8080端口</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd --add-port<span class="token operator">=</span><span class="token number">8080</span>/tcp <span class="token parameter variable">--permanent</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>命令重启防火墙</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--reload</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>看防火墙开启还是关闭</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">systemctl status firewalld.service<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>可以查看端口开放情况</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> firewall-cmd --list-all<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h2 id="三-shell脚本"><a href="#三-shell脚本" class="headerlink" title="三.shell脚本"></a>三.shell脚本</h2><p>赋权限</p>
-<p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">chmod</span> u+x 文件名称<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>基本脚本</p>
-<p>java</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">#<span class="token operator">!</span><span class="token operator">/</span>bin<span class="token operator">/</span>bash
-<span class="token constant">PID</span><span class="token operator">=</span>$<span class="token punctuation">(</span>ps <span class="token operator">-</span>ef <span class="token operator">|</span> grep fn<span class="token operator">-</span>safeedu <span class="token operator">|</span> grep <span class="token operator">-</span>v grep <span class="token operator">|</span> awk '<span class="token punctuation">{</span> print $<span class="token number">2</span> <span class="token punctuation">}</span>'<span class="token punctuation">)</span>
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">-</span>z <span class="token string">"$PID"</span> <span class="token punctuation">]</span>
-then
-    echo <span class="token class-name">Application</span> is  stopped
-<span class="token keyword">else</span>
-    echo kill $<span class="token constant">PID</span>
-    kill <span class="token operator">-</span><span class="token number">9</span> $<span class="token constant">PID</span>
-    rm <span class="token operator">-</span>rf <span class="token operator">/</span>root<span class="token operator">/</span>xxoo
-fi
-source <span class="token operator">/</span>etc<span class="token operator">/</span>profile<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="四-后端运行java"><a href="#四-后端运行java" class="headerlink" title="四.后端运行java"></a>四.后端运行java</h2><p>shell</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">nohup</span> <span class="token function">java</span> <span class="token parameter variable">-jar</span> /root/xxoo/fn-safeedu*.jar <span class="token operator">&gt;</span>my.log.log <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">&amp;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>来源: 个人笔记<br>文章作者: 青山<br>文章链接: <a target="_blank" rel="noopener" href="http://122.152.237.173/posts/4e543b07.html">http://122.152.237.173/posts/4e543b07.html</a><br>本文章著作权归作者所有，任何形式的转载都请注明出处。</p>
 
                 
             </div>
@@ -826,7 +937,7 @@ source <span class="token operator">/</span>etc<span class="token operator">/</s
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://www.luckyzmj.cn/posts/5829988d.html">http://www.luckyzmj.cn/posts/5829988d.html</a>
+                    <a href="http://www.luckyzmj.cn/posts/17335b0a.html">http://www.luckyzmj.cn/posts/17335b0a.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -864,8 +975,8 @@ source <span class="token operator">/</span>etc<span class="token operator">/</s
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/linux/">
-                                    <span class="chip bg-color">linux</span>
+                                <a href="/tags/langchain/">
+                                    <span class="chip bg-color">-langchain</span>
                                 </a>
                             
                         </div>
@@ -1337,16 +1448,17 @@ new Valine({
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/c10d2ede.html">
+                <a href="/posts/17335b0a.html">
                     <div class="card-image">
                         
-                        <img src="https://ts3.tc.mm.bing.net/th/id/OIP-C.Qm9aT1zzLJFbXTrzBiM6CgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" class="responsive-img" alt="Ollama">
+                        <img src="https://haowallpaper.com/link//common/file/previewFileImg/17063145719188864" class="responsive-img" alt="Prompt-langChain">
                         
-                        <span class="card-title">Ollama</span>
+                        <span class="card-title">Prompt-langChain</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1356,9 +1468,9 @@ new Valine({
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-04-02
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-06-28
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -1367,11 +1479,12 @@ new Valine({
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-                        <span class="chip bg-color">私有化大模型</span>
+                    <a href="/tags/langchain/">
+                        <span class="chip bg-color">-langchain</span>
                     </a>
                     
                 </div>
@@ -1385,12 +1498,12 @@ new Valine({
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/3dbddf05.html">
+                <a href="/posts/2b2a6e68.html">
                     <div class="card-image">
                         
-                        <img src="https://img95.699pic.com/photo/32696/8724.jpg_wh300.jpg!/fh/300/quality/90" class="responsive-img" alt="聊天机器人搭建">
+                        <img src="https://ts3.tc.mm.bing.net/th/id/OIP-C.LiI7NjE4TqE6hcFz7chotwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" class="responsive-img" alt="UV-langChain">
                         
-                        <span class="card-title">聊天机器人搭建</span>
+                        <span class="card-title">UV-langChain</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1401,7 +1514,7 @@ new Valine({
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-04-01
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-06-26
                             </span>
                         <span class="publish-author">
                             
@@ -1414,8 +1527,8 @@ new Valine({
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA/">
-                        <span class="chip bg-color">聊天机器人</span>
+                    <a href="/tags/langchain/">
+                        <span class="chip bg-color">-langchain</span>
                     </a>
                     
                 </div>
