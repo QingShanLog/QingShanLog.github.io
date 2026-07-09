@@ -659,21 +659,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-06-29
+                    2026-07-08
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.4k
+                    2.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    11 分
+                    12 分
                 </div>
                 
 
@@ -743,19 +743,60 @@ rprint<span class="token punctuation">(</span>response2<span class="token punctu
 <pre class="line-numbers language-none"><code class="language-none">#安装依赖包
 pip install langgraph langchain-openai langgraph-checkpoint-mysql<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> create_agent
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>tools <span class="token keyword">import</span> tool
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>mysql<span class="token punctuation">.</span>aio <span class="token keyword">import</span> AIOMySQLSaver
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> create_agent
+<span class="token keyword">import</span> os
+<span class="token keyword">import</span> asyncio
+<span class="token keyword">from</span> dotenv <span class="token keyword">import</span> load_dotenv
+<span class="token keyword">from</span> langchain_openai <span class="token keyword">import</span> ChatOpenAI
 
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>postgres <span class="token keyword">import</span> PostgresSaver  
+load_dotenv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+model <span class="token operator">=</span> ChatOpenAI<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"qwen3.7-plus"</span><span class="token punctuation">,</span>
+    api_key<span class="token operator">=</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">"OPENAI_API_KEY"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    base_url<span class="token operator">=</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">"OPENAI_BASE_URL"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">get_user_info</span><span class="token punctuation">(</span>username<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    获取用户信息
+    :param username: 用户名
+    :return: 用户信息
+    """</span>
+    <span class="token keyword">return</span> <span class="token string-interpolation"><span class="token string">f"用户</span><span class="token interpolation"><span class="token punctuation">{</span>username<span class="token punctuation">}</span></span><span class="token string">的信息是：用户名</span><span class="token interpolation"><span class="token punctuation">{</span>username<span class="token punctuation">}</span></span><span class="token string">，密码123456"</span></span>
+
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    conn_string <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"mysql+aiomysql://</span><span class="token interpolation"><span class="token punctuation">{</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">'MYSQL_USER'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">:</span><span class="token interpolation"><span class="token punctuation">{</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">'MYSQL_PASSWORD'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">@</span><span class="token interpolation"><span class="token punctuation">{</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">'MYSQL_HOST'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">:</span><span class="token interpolation"><span class="token punctuation">{</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">'MYSQL_PORT'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token punctuation">{</span>os<span class="token punctuation">.</span>getenv<span class="token punctuation">(</span><span class="token string">'MYSQL_DATABASE'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">"</span></span>
 
 
-DB_URI <span class="token operator">=</span> <span class="token string">"postgresql://postgres:postgres@localhost:5442/postgres?sslmode=disable"</span>
-<span class="token keyword">with</span> PostgresSaver<span class="token punctuation">.</span>from_conn_string<span class="token punctuation">(</span>DB_URI<span class="token punctuation">)</span> <span class="token keyword">as</span> checkpointer<span class="token punctuation">:</span>
-    checkpointer<span class="token punctuation">.</span>setup<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment"># auto create tables in PostgreSQL</span>
-    agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
-        <span class="token string">"gpt-5.4"</span><span class="token punctuation">,</span>
-        tools<span class="token operator">=</span><span class="token punctuation">[</span>get_user_info<span class="token punctuation">]</span><span class="token punctuation">,</span>
-        checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">,</span>
-    <span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token keyword">async</span> <span class="token keyword">with</span> AIOMySQLSaver<span class="token punctuation">.</span>from_conn_string<span class="token punctuation">(</span>conn_string<span class="token punctuation">)</span> <span class="token keyword">as</span> checkpointer<span class="token punctuation">:</span>
+        <span class="token keyword">await</span> checkpointer<span class="token punctuation">.</span>setup<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
+            model<span class="token punctuation">,</span>
+            tools<span class="token operator">=</span><span class="token punctuation">[</span>get_user_info<span class="token punctuation">]</span><span class="token punctuation">,</span>
+            checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+        config <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+
+        response1 <span class="token operator">=</span> <span class="token keyword">await</span> agent<span class="token punctuation">.</span>ainvoke<span class="token punctuation">(</span>
+            <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"小白的用户信息是什么?"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+            config<span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+        response2 <span class="token operator">=</span> <span class="token keyword">await</span> agent<span class="token punctuation">.</span>ainvoke<span class="token punctuation">(</span>
+            <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"我刚问了什么问题?"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+            config<span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+        <span class="token keyword">from</span> rich <span class="token keyword">import</span> <span class="token keyword">print</span> <span class="token keyword">as</span> rprint
+        rprint<span class="token punctuation">(</span>response2<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>content<span class="token punctuation">)</span>
+
+asyncio<span class="token punctuation">.</span>run<span class="token punctuation">(</span>main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h1 id="自定义智能体记忆"><a href="#自定义智能体记忆" class="headerlink" title="自定义智能体记忆"></a>自定义智能体记忆</h1><p>默认情况下，智能体使用 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langchain/agents/middleware/types/AgentState"><code>AgentState</code></a> 来管理短期记忆，特别是通过 <code>messages</code> 键管理对话历史。您可以扩展 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langchain/agents/middleware/types/AgentState"><code>AgentState</code></a> 以添加额外字段。自定义状态架构可以通过 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langchain/agents/middleware/#langchain.agents.middleware.AgentMiddleware.state_schema"><code>state_schema</code></a> 参数传递给 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langchain/agents/factory/create_agent"><code>create_agent</code></a>。</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>tools <span class="token keyword">import</span> tool
@@ -1969,7 +2010,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">144.3k</span>&nbsp;字
+                class="white-color">157.2k</span>&nbsp;字
             
             
             
