@@ -666,14 +666,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    2.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    12 分
                 </div>
                 
 
@@ -691,7 +691,459 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <h1 id="子图"><a href="#子图" class="headerlink" title="子图"></a>子图</h1><p>本指南解释了使用子图的机制。子图是一个在另一个图中用作<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#nodes">节点</a>的<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#graphs">图</a>。子图适用于：</p>
+<ul>
+<li>构建<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langchain/multi-agent">多智能体系统</a></li>
+<li>在多个图中复用一组节点</li>
+<li>分布式开发：当您希望不同的团队独立处理图的不同部分时，可以将每个部分定义为子图，只要子图接口（输入和输出模式）得到遵守，就可以构建父图而无需了解子图的任何细节</li>
+</ul>
+<h1 id="定义子图通信"><a href="#定义子图通信" class="headerlink" title="定义子图通信"></a>定义子图通信</h1><p>添加子图时，您需要定义父图和子图如何通信</p>
+<table>
+<thead>
+<tr>
+<th align="left">模式</th>
+<th align="left">使用场景</th>
+<th align="left">状态模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#call-a-subgraph-inside-a-node">在节点内调用子图</a></td>
+<td align="left">父图和子图具有<strong>不同的状态模式</strong>（没有共享键），或者您需要在它们之间转换状态</td>
+<td align="left">您编写一个包装函数，将父状态映射到子图输入，并将子图输出映射回父状态</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#add-a-subgraph-as-a-node">添加子图作为节点</a></td>
+<td align="left">父图和子图<strong>共享状态键</strong>——子图读取并写入与父图相同的通道</td>
+<td align="left">您将编译后的子图直接传递给<code>add_node</code>——无需包装函数</td>
+</tr>
+</tbody></table>
+<h2 id="在节点内调用子图"><a href="#在节点内调用子图" class="headerlink" title="在节点内调用子图"></a>在节点内调用子图</h2><p>当父图和子图具有<strong>不同的状态模式</strong>（没有共享键）时，在节点函数内调用子图。当您想为<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langchain/multi-agent">多智能体</a>系统中的每个智能体保留私有消息历史记录时，这很常见。节点函数在调用子图之前将父状态转换为子图状态，并在返回之前将结果转换回父状态。</p>
+<p>应用场景</p>
+<pre class="line-numbers language-none"><code class="language-none">主图:
+  ┌──────────────────────────────────────┐
+  │ 预处理 → 子图A(翻译) → 审批 → 子图A │
+  │                         ↑            │
+  │                    翻译能力复用两次    │
+  └──────────────────────────────────────┘
+  
+  
+ 主图（清晰易读）:
+  用户输入 → 检索 → 生成回答 → 质量检查 → 输出
+
+质量检查子图（内部复杂逻辑被封装）:
+  ┌─────────────────────────────────┐
+  │ 事实核查 → 格式检查 → 敏感词过滤 │
+  │     ↓ 不通过时循环修改           │
+  └─────────────────────────────────┘
+  
+  
+  主图 (平台团队维护):
+  入口 → 路由 → 子图A(支付团队) → 子图B(物流团队) → 出口
+
+子图A (支付团队独立维护):
+  验证 → 扣款 → 记录 → 通知
+
+子图B (物流团队独立维护):
+  查库存 → 分配仓库 → 生成运单
+# 翻译子图 —— 可被多个主图复用
+translation_graph = StateGraph(TranslationState)
+translation_graph.add_node("detect_language", detect_lang)
+translation_graph.add_node("translate", translate)
+translation_graph.add_edge(START, "detect_language")
+translation_graph.add_edge("detect_language", "translate")
+translation_graph.add_edge("translate", END)
+tg = translation_graph.compile()
+
+# 主图1: 文档翻译流程
+doc_graph.add_node("translate_title", tg)  # 复用
+doc_graph.add_node("translate_body", tg)   # 复用
+
+# 主图2: 聊天翻译流程
+chat_graph.add_node("translate_msg", tg)   # 复用<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> typing_extensions <span class="token keyword">import</span> TypedDict
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph<span class="token punctuation">.</span>state <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> START
+
+<span class="token comment"># Define subgraph</span>
+<span class="token keyword">class</span> <span class="token class-name">SubgraphState</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># note that none of these keys are shared with the parent graph state</span>
+    bar<span class="token punctuation">:</span> <span class="token builtin">str</span>
+    baz<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token keyword">def</span> <span class="token function">subgraph_node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> SubgraphState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"baz"</span><span class="token punctuation">:</span> <span class="token string">"baz"</span><span class="token punctuation">}</span>
+
+<span class="token keyword">def</span> <span class="token function">subgraph_node_2</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> SubgraphState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"bar"</span><span class="token punctuation">:</span> state<span class="token punctuation">[</span><span class="token string">"bar"</span><span class="token punctuation">]</span> <span class="token operator">+</span> state<span class="token punctuation">[</span><span class="token string">"baz"</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>SubgraphState<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_1<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_2<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"subgraph_node_1"</span><span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span><span class="token string">"subgraph_node_1"</span><span class="token punctuation">,</span> <span class="token string">"subgraph_node_2"</span><span class="token punctuation">)</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Define parent graph</span>
+<span class="token keyword">class</span> <span class="token class-name">ParentState</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    foo<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token keyword">def</span> <span class="token function">node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> ParentState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token string">"hi! "</span> <span class="token operator">+</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+<span class="token keyword">def</span> <span class="token function">node_2</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> ParentState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># Transform the state to the subgraph state</span>
+    response <span class="token operator">=</span> subgraph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"bar"</span><span class="token punctuation">:</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token comment"># Transform response back to the parent state</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> response<span class="token punctuation">[</span><span class="token string">"bar"</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>ParentState<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> node_1<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_2"</span><span class="token punctuation">,</span> node_2<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"node_1"</span><span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> <span class="token string">"node_2"</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> chunk <span class="token keyword">in</span> graph<span class="token punctuation">.</span>stream<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token string">"foo"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> subgraphs<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> version<span class="token operator">=</span><span class="token string">"v2"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> chunk<span class="token punctuation">[</span><span class="token string">"type"</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">"updates"</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span>chunk<span class="token punctuation">[</span><span class="token string">"ns"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> chunk<span class="token punctuation">[</span><span class="token string">"data"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="添加子图作为节点"><a href="#添加子图作为节点" class="headerlink" title="添加子图作为节点"></a>添加子图作为节点</h2><p>当父图和子图<strong>共享状态键</strong>时，您可以将编译后的子图直接传递给<code>add_node</code>。无需包装函数——子图会自动读取和写入父图的状态通道。例如，在<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langchain/multi-agent">多智能体</a>系统中，智能体通常通过共享的<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#why-use-messages">消息</a>键进行通信。</p>
+<p><img src="../images/%E5%AD%90%E5%9B%BE-langGraph/subgraph.png" alt="SQL 智能体图"></p>
+<p>如果您的子图与父图共享状态键，您可以按照以下步骤将其添加到您的图中：</p>
+<ol>
+<li><p>定义子图工作流（以下示例中的<code>subgraph_builder</code>）并编译它</p>
+</li>
+<li><p>在定义父图工作流时，将编译后的子图传递给<a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/graph/state/StateGraph/add_node"><code>add_node</code></a>方法</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> typing_extensions <span class="token keyword">import</span> TypedDict
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph<span class="token punctuation">.</span>state <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> START
+
+<span class="token keyword">class</span> <span class="token class-name">State</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    foo<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token comment"># Subgraph</span>
+
+<span class="token keyword">def</span> <span class="token function">subgraph_node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> State<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token string">"hi! "</span> <span class="token operator">+</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_1<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"subgraph_node_1"</span><span class="token punctuation">)</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Parent graph</span>
+
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> subgraph<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"node_1"</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ol>
+<h1 id="子图持久性"><a href="#子图持久性" class="headerlink" title="子图持久性"></a>子图持久性</h1><p>使用子图时，您需要决定其内部数据在两次调用之间如何处理。考虑一个将任务委托给专业子代理的客户支持机器人：这个“账单专家”子代理应该记住客户之前的提问，还是每次被调用时都重新开始？<code>.compile()</code>上的<code>checkpointer</code>参数控制子图的持久性：</p>
+<table>
+<thead>
+<tr>
+<th align="left">模式</th>
+<th align="left"><code>检查点器=</code></th>
+<th align="left">行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#per-invocation-default">每次调用</a></td>
+<td align="left"><code>None</code>（默认）</td>
+<td align="left">每次调用都从头开始，并继承父级的检查点器，以支持单次调用内的<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/interrupts">中断</a>和<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/durable-execution">持久执行</a>。</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#per-thread">每线程</a></td>
+<td align="left"><code>True</code></td>
+<td align="left">状态在同一线程上的不同调用之间累积。每次调用都会从上次中断的地方继续。</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#stateless">无状态</a></td>
+<td align="left"><code>False</code></td>
+<td align="left">完全没有检查点——像普通函数调用一样运行。没有中断或持久执行。</td>
+</tr>
+</tbody></table>
+<p>对于大多数应用程序，每次调用都是正确的选择，包括子代理处理独立请求的<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langchain/multi-agent">多代理</a>系统。当子代理需要多轮对话记忆时（例如，一个通过多次交流建立上下文的研究助理），请使用每线程模式。</p>
+<h2 id="有状态"><a href="#有状态" class="headerlink" title="有状态"></a>有状态</h2><p>有状态子图继承父图的检查点器，这使得<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/interrupts">中断</a>、<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/durable-execution">持久执行</a>和状态检查成为可能。这两种有状态模式在状态保留时长方面有所不同。</p>
+<h2 id="每次调用（默认）"><a href="#每次调用（默认）" class="headerlink" title="每次调用（默认）"></a>每次调用（默认）</h2><p>当子图的每次调用都是独立的，并且子代理不需要记住以前的任何调用时，请使用按调用持久性。这是最常见的模式，特别是对于<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langchain/multi-agent">多代理</a>系统，其中子代理处理一次性请求，如“查找此客户的订单”或“总结此文档”。</p>
+<p>省略<code>checkpointer</code>或将其设置为<code>None</code>。</p>
+<p>每次调用都从头开始，但在单次调用中，子图继承父级的检查点器，并且可以使用<code>interrupt()</code>暂停和恢复。以下示例使用两个子代理（水果专家、蔬菜专家）作为外部代理的工具：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> create_agent
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>tools <span class="token keyword">import</span> tool
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> MemorySaver
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>types <span class="token keyword">import</span> Command<span class="token punctuation">,</span> interrupt
+
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">fruit_info</span><span class="token punctuation">(</span>fruit_name<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""Look up fruit info."""</span>
+    <span class="token keyword">return</span> <span class="token string-interpolation"><span class="token string">f"Info about </span><span class="token interpolation"><span class="token punctuation">{</span>fruit_name<span class="token punctuation">}</span></span><span class="token string">"</span></span>
+
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">veggie_info</span><span class="token punctuation">(</span>veggie_name<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""Look up veggie info."""</span>
+    <span class="token keyword">return</span> <span class="token string-interpolation"><span class="token string">f"Info about </span><span class="token interpolation"><span class="token punctuation">{</span>veggie_name<span class="token punctuation">}</span></span><span class="token string">"</span></span>
+
+<span class="token comment"># Subagents - no checkpointer setting (inherits parent)</span>
+fruit_agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"gpt-5.4-mini"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span><span class="token punctuation">[</span>fruit_info<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    prompt<span class="token operator">=</span><span class="token string">"You are a fruit expert. Use the fruit_info tool. Respond in one sentence."</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+veggie_agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"gpt-5.4-mini"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span><span class="token punctuation">[</span>veggie_info<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    prompt<span class="token operator">=</span><span class="token string">"You are a veggie expert. Use the veggie_info tool. Respond in one sentence."</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment"># Wrap subagents as tools for the outer agent</span>
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">ask_fruit_expert</span><span class="token punctuation">(</span>question<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""Ask the fruit expert. Use for ALL fruit questions."""</span>
+    response <span class="token operator">=</span> fruit_agent<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+        <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> question<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+    <span class="token keyword">return</span> response<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>content
+
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">ask_veggie_expert</span><span class="token punctuation">(</span>question<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""Ask the veggie expert. Use for ALL veggie questions."""</span>
+    response <span class="token operator">=</span> veggie_agent<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+        <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> question<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+    <span class="token keyword">return</span> response<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>content
+
+<span class="token comment"># Outer agent with checkpointer</span>
+agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"gpt-5.4-mini"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span><span class="token punctuation">[</span>ask_fruit_expert<span class="token punctuation">,</span> ask_veggie_expert<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    prompt<span class="token operator">=</span><span class="token punctuation">(</span>
+        <span class="token string">"You have two experts: ask_fruit_expert and ask_veggie_expert. "</span>
+        <span class="token string">"ALWAYS delegate questions to the appropriate expert."</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span>
+    checkpointer<span class="token operator">=</span>MemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="每线程"><a href="#每线程" class="headerlink" title="每线程"></a>每线程</h2><p>当子代理需要记住之前的交互时，请使用按线程持久性。例如，一个通过多次交流建立上下文的研究助理，或者一个跟踪它已经编辑过的文件的编码助理。子代理的对话历史记录和数据在同一线程上的多次调用中累积。每次调用都会从上次中断的地方继续。使用<code>checkpointer=True</code>进行编译以启用此行为。以下示例使用编译了<code>checkpointer=True</code>的水果专家子代理</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents <span class="token keyword">import</span> create_agent
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>agents<span class="token punctuation">.</span>middleware <span class="token keyword">import</span> ToolCallLimitMiddleware
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>tools <span class="token keyword">import</span> tool
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> MemorySaver
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>types <span class="token keyword">import</span> Command<span class="token punctuation">,</span> interrupt
+
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">fruit_info</span><span class="token punctuation">(</span>fruit_name<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""Look up fruit info."""</span>
+    <span class="token keyword">return</span> <span class="token string-interpolation"><span class="token string">f"Info about </span><span class="token interpolation"><span class="token punctuation">{</span>fruit_name<span class="token punctuation">}</span></span><span class="token string">"</span></span>
+
+<span class="token comment"># Subagent with checkpointer=True for persistent state</span>
+fruit_agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"gpt-5.4-mini"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span><span class="token punctuation">[</span>fruit_info<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    prompt<span class="token operator">=</span><span class="token string">"You are a fruit expert. Use the fruit_info tool. Respond in one sentence."</span><span class="token punctuation">,</span>
+    checkpointer<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment"># Wrap subagent as a tool for the outer agent</span>
+<span class="token decorator annotation punctuation">@tool</span>
+<span class="token keyword">def</span> <span class="token function">ask_fruit_expert</span><span class="token punctuation">(</span>question<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">str</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""Ask the fruit expert. Use for ALL fruit questions."""</span>
+    response <span class="token operator">=</span> fruit_agent<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+        <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> question<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+    <span class="token keyword">return</span> response<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>content
+
+<span class="token comment"># Outer agent with checkpointer</span>
+<span class="token comment"># Use ToolCallLimitMiddleware to prevent parallel calls to per-thread subagents,</span>
+<span class="token comment"># which would cause checkpoint conflicts.</span>
+agent <span class="token operator">=</span> create_agent<span class="token punctuation">(</span>
+    model<span class="token operator">=</span><span class="token string">"gpt-5.4-mini"</span><span class="token punctuation">,</span>
+    tools<span class="token operator">=</span><span class="token punctuation">[</span>ask_fruit_expert<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    prompt<span class="token operator">=</span><span class="token string">"You have a fruit expert. ALWAYS delegate fruit questions to ask_fruit_expert."</span><span class="token punctuation">,</span>
+    middleware<span class="token operator">=</span><span class="token punctuation">[</span>
+        ToolCallLimitMiddleware<span class="token punctuation">(</span>tool_name<span class="token operator">=</span><span class="token string">"ask_fruit_expert"</span><span class="token punctuation">,</span> run_limit<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    checkpointer<span class="token operator">=</span>MemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="无状态"><a href="#无状态" class="headerlink" title="无状态"></a>无状态</h2><p>当您希望子代理像普通函数调用一样运行，没有检查点开销时，请使用此选项。子图无法暂停/恢复，也无法受益于<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/durable-execution">持久执行</a>。使用<code>checkpointer=False</code>进行编译。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h2 id="检查点器参考"><a href="#检查点器参考" class="headerlink" title="检查点器参考"></a>检查点器参考</h2><p>使用<code>.compile()</code>上的<code>checkpointer</code>参数控制子图持久性</p>
+<pre class="line-numbers language-none"><code class="language-none">subgraph = builder.compile(checkpointer=False)  # or True / None<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<table>
+<thead>
+<tr>
+<th align="left">功能</th>
+<th align="left">每次调用（默认）</th>
+<th align="left">每线程</th>
+<th align="left">无状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>检查点器=</code></td>
+<td align="left"><code>无</code></td>
+<td align="left"><code>True</code></td>
+<td align="left"><code>False</code></td>
+</tr>
+<tr>
+<td align="left">中断（HITL）</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">❌</td>
+</tr>
+<tr>
+<td align="left">多轮记忆</td>
+<td align="left">❌</td>
+<td align="left">✅</td>
+<td align="left">❌</td>
+</tr>
+<tr>
+<td align="left">多次调用（不同子图）</td>
+<td align="left">✅</td>
+<td align="left">⚠️</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">多次调用（相同子图）</td>
+<td align="left">✅</td>
+<td align="left">❌</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">状态检查</td>
+<td align="left">⚠️</td>
+<td align="left">✅</td>
+<td align="left">❌</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>中断（HITL）</strong>：子图可以使用<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/interrupts"><code>interrupt()</code></a>暂停执行并等待用户输入，然后从上次中断的地方恢复。</li>
+<li><strong>多轮记忆</strong>：子图在同一<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence#threads">线程</a>内的多次调用中保留其状态。每次调用都会从上次中断的地方继续，而不是重新开始。</li>
+<li><strong>多次调用（不同子图）</strong>：可以在单个节点内调用多个不同的子图实例，而不会出现检查点命名空间冲突。</li>
+<li><strong>多次调用（相同子图）</strong>：可以在单个节点内多次调用相同的子图实例。如果是有状态持久性，这些调用会写入相同的检查点命名空间并发生冲突——请改用每次调用持久性。</li>
+<li><strong>状态检查</strong>：子图的状态可以通过<code>get_state(config, subgraphs=True)</code>用于调试和监控。</li>
+</ul>
+<h1 id="查看子图状态"><a href="#查看子图状态" class="headerlink" title="查看子图状态"></a>查看子图状态</h1><p>当您启用<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence">持久性</a>时，可以使用子图选项检查子图状态。在<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#stateless">无状态</a>检查点（<code>checkpointer=False</code>）下，不保存子图检查点，因此子图状态不可用。</p>
+<h2 id="每次调用"><a href="#每次调用" class="headerlink" title="每次调用"></a>每次调用</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> START<span class="token punctuation">,</span> StateGraph
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> MemorySaver
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>types <span class="token keyword">import</span> interrupt<span class="token punctuation">,</span> Command
+<span class="token keyword">from</span> typing_extensions <span class="token keyword">import</span> TypedDict
+
+<span class="token keyword">class</span> <span class="token class-name">State</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    foo<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token comment"># Subgraph</span>
+<span class="token keyword">def</span> <span class="token function">subgraph_node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> State<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    value <span class="token operator">=</span> interrupt<span class="token punctuation">(</span><span class="token string">"Provide value:"</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span> <span class="token operator">+</span> value<span class="token punctuation">}</span>
+
+subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_1<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"subgraph_node_1"</span><span class="token punctuation">)</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># inherits parent checkpointer</span>
+
+<span class="token comment"># Parent graph</span>
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> subgraph<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"node_1"</span><span class="token punctuation">)</span>
+
+checkpointer <span class="token operator">=</span> MemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span>
+
+config <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+
+<span class="token comment"># View subgraph state for the current invocation</span>
+subgraph_state <span class="token operator">=</span> graph<span class="token punctuation">.</span>get_state<span class="token punctuation">(</span>config<span class="token punctuation">,</span> subgraphs<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">.</span>tasks<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>state  
+
+<span class="token comment"># Resume the subgraph</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>Command<span class="token punctuation">(</span>resume<span class="token operator">=</span><span class="token string">"bar"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="每线程-1"><a href="#每线程-1" class="headerlink" title="每线程"></a>每线程</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> START<span class="token punctuation">,</span> StateGraph<span class="token punctuation">,</span> MessagesState
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> MemorySaver
+
+<span class="token comment"># Subgraph with its own persistent state</span>
+subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>MessagesState<span class="token punctuation">)</span>
+<span class="token comment"># ... add nodes and edges</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Parent graph</span>
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>MessagesState<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"agent"</span><span class="token punctuation">,</span> subgraph<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"agent"</span><span class="token punctuation">)</span>
+
+checkpointer <span class="token operator">=</span> MemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span>
+
+config <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"hi"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"what did I say?"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+
+<span class="token comment"># View accumulated subgraph state (includes messages from both invocations)</span>
+subgraph_state <span class="token operator">=</span> graph<span class="token punctuation">.</span>get_state<span class="token punctuation">(</span>config<span class="token punctuation">,</span> subgraphs<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">.</span>tasks<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>state  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="流式子图输出"><a href="#流式子图输出" class="headerlink" title="流式子图输出"></a>流式子图输出</h1><p>要在流式输出中包含子图的输出，您可以在父图的流式方法中设置子图选项。这将同时流式传输父图和任何子图的输出。</p>
+<pre class="line-numbers language-none"><code class="language-none">for chunk in graph.stream(
+    {"foo": "foo"},
+    subgraphs=True,
+    stream_mode="updates",
+):
+    print(chunk)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> typing_extensions <span class="token keyword">import</span> TypedDict
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph<span class="token punctuation">.</span>state <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> START
+
+<span class="token comment"># Define subgraph</span>
+<span class="token keyword">class</span> <span class="token class-name">SubgraphState</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    foo<span class="token punctuation">:</span> <span class="token builtin">str</span>
+    bar<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token keyword">def</span> <span class="token function">subgraph_node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> SubgraphState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"bar"</span><span class="token punctuation">:</span> <span class="token string">"bar"</span><span class="token punctuation">}</span>
+
+<span class="token keyword">def</span> <span class="token function">subgraph_node_2</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> SubgraphState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># note that this node is using a state key ('bar') that is only available in the subgraph</span>
+    <span class="token comment"># and is sending update on the shared state key ('foo')</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span> <span class="token operator">+</span> state<span class="token punctuation">[</span><span class="token string">"bar"</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>SubgraphState<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_1<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_2<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"subgraph_node_1"</span><span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span><span class="token string">"subgraph_node_1"</span><span class="token punctuation">,</span> <span class="token string">"subgraph_node_2"</span><span class="token punctuation">)</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Define parent graph</span>
+<span class="token keyword">class</span> <span class="token class-name">ParentState</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    foo<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token keyword">def</span> <span class="token function">node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> ParentState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token string">"hi! "</span> <span class="token operator">+</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>ParentState<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> node_1<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_2"</span><span class="token punctuation">,</span> subgraph<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"node_1"</span><span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> <span class="token string">"node_2"</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> chunk <span class="token keyword">in</span> graph<span class="token punctuation">.</span>stream<span class="token punctuation">(</span>
+    <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token string">"foo"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    stream_mode<span class="token operator">=</span><span class="token string">"updates"</span><span class="token punctuation">,</span>
+    subgraphs<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    version<span class="token operator">=</span><span class="token string">"v2"</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> chunk<span class="token punctuation">[</span><span class="token string">"type"</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">"updates"</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span>chunk<span class="token punctuation">[</span><span class="token string">"ns"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> chunk<span class="token punctuation">[</span><span class="token string">"data"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
                 
             </div>
             <hr/>
@@ -1228,17 +1680,16 @@ new Valine({
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/53be2930.html">
+                <a href="/posts/fdae7c5a.html">
                     <div class="card-image">
                         
-                        <img src="https://pic.3gbizhi.com/uploadmark/20260426/5212024c90b7d27ce96f9d744a1f41ca.webp" class="responsive-img" alt="子图-langGraph">
+                        <img src="https://c-ssl.duitang.com/uploads/blog/202112/24/20211224085601_100c7.jpeg" class="responsive-img" alt="流式处理-langGraph">
                         
-                        <span class="card-title">子图-langGraph</span>
+                        <span class="card-title">流式处理-langGraph</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1248,9 +1699,9 @@ new Valine({
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-10
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-10
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -1259,7 +1710,6 @@ new Valine({
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -1548,7 +1998,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">187.4k</span>&nbsp;字
+                class="white-color">190.5k</span>&nbsp;字
             
             
             
