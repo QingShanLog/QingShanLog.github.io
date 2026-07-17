@@ -659,21 +659,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-06-27
+                    2026-07-17
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    515
+                    1.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    2 分
+                    5 分
                 </div>
                 
 
@@ -779,6 +779,175 @@ uv run langgraph dev<span aria-hidden="true" class="line-numbers-rows"><span></s
 
 <p>一旦服务器运行起来，您的 Agent 就可以通过 API 在 <code>http://127.0.0.1:2024</code> 访问，也可以通过 Studio UI 在 <code>https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024</code> 访问</p>
 <p><img src="../images/LangSmith-Studio/image-20260626162829434.png" alt="image-20260626162829434"></p>
+<h3 id="7-配置多agent"><a href="#7-配置多agent" class="headerlink" title="7.配置多agent"></a>7.配置多agent</h3><pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"."</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"graphs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"main"</span><span class="token operator">:</span> <span class="token string">"./main.py:app"</span><span class="token punctuation">,</span>
+    <span class="token property">"demo_01"</span><span class="token operator">:</span> <span class="token string">"./demo/01.py:main"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"env"</span><span class="token operator">:</span> <span class="token string">".env"</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">import os
+import uuid
+from typing import List, Dict, Type, Optional, Annotated
+from dotenv import load_dotenv
+from langchain_ollama import ChatOllama
+from langchain_core.messages import HumanMessage, BaseMessage
+from langchain.tools import tool
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode
+from langgraph.graph.message import add_messages
+from abc import ABC, abstractmethod
+from typing_extensions import TypedDict
+
+load_dotenv()
+
+
+@tool
+def search_tool(query: str) -&gt; str:
+    """Search for information."""
+    return f"搜索结果: {query} (模拟返回)"
+
+
+@tool
+def python_repl_tool(code: str) -&gt; str:
+    """Execute Python code."""
+    return f"执行代码: {code} (模拟返回)"
+
+
+# ========== Agent 基类：定义统一接口 ==========
+class BaseAgent(ABC):
+    def __init__(self, name: str, llm, tools: list):
+        self.name = name
+        self.llm = llm
+        self.tools = tools
+
+    @abstractmethod
+    def __call__(self, state: dict) -&gt; dict:
+        pass
+
+
+# ========== 具体 Agent 类 ==========
+class ResearchAgent(BaseAgent):
+    def __call__(self, state: dict) -&gt; dict:
+        messages = state["messages"]
+        llm_with_tools = self.llm.bind_tools(self.tools)
+        response = llm_with_tools.invoke(messages)
+        return {"messages": [response], "current_agent": self.name}
+
+
+class CodeAgent(BaseAgent):
+    def __call__(self, state: dict) -&gt; dict:
+        messages = state["messages"]
+        llm_with_tools = self.llm.bind_tools(self.tools)
+        response = llm_with_tools.invoke(messages)
+        return {"messages": [response], "current_agent": self.name}
+
+
+class ReviewAgent(BaseAgent):
+    def __call__(self, state: dict) -&gt; dict:
+        messages = state["messages"]
+        response = self.llm.invoke(messages)
+        return {"messages": [response], "current_agent": self.name}
+
+
+# ========== Agent 工厂 ==========
+class AgentFactory:
+    _registry: Dict[str, Type[BaseAgent]] = {}
+
+    @classmethod
+    def register(cls, name: str, agent_class: Type[BaseAgent]):
+        cls._registry[name] = agent_class
+
+    @classmethod
+    def create(cls, name: str, llm, tools: list) -&gt; BaseAgent:
+        if name not in cls._registry:
+            raise ValueError(f"未知 Agent 类型: {name}")
+        return cls._registry[name](name, llm, tools)
+
+
+AgentFactory.register("research_agent", ResearchAgent)
+AgentFactory.register("code_agent", CodeAgent)
+AgentFactory.register("review_agent", ReviewAgent)
+
+
+# ========== 状态定义 ==========
+class AgentState(TypedDict):
+    messages: Annotated[List[BaseMessage], add_messages]
+    current_agent: str
+    user_id: str
+
+
+# ========== 主流程构建 ==========
+llm = ChatOllama(model="deepseek-r1:1.5b", temperature=0.2)
+
+research_agent = AgentFactory.create("research_agent", llm, [search_tool])
+code_agent = AgentFactory.create("code_agent", llm, [python_repl_tool])
+review_agent = AgentFactory.create("review_agent", llm, [])
+
+workflow = StateGraph(AgentState)
+workflow.add_node("research_agent", research_agent)
+workflow.add_node("code_agent", code_agent)
+workflow.add_node("review_agent", review_agent)
+workflow.add_node("tools", ToolNode([search_tool, python_repl_tool]))
+
+workflow.add_edge("research_agent", "tools")
+workflow.add_edge("tools", "code_agent")
+workflow.add_edge("code_agent", "review_agent")
+workflow.add_edge("review_agent", END)
+workflow.set_entry_point("research_agent")
+app = workflow.compile()
+
+
+# ========== 入口函数 ==========
+def run_agent_chain(user_query: str, user_id: Optional[str] = None):
+    if not user_id:
+        user_id = str(uuid.uuid4())
+
+    result = app.invoke(
+        {"messages": [HumanMessage(content=user_query)], "user_id": user_id},
+        config={"configurable": {"session_id": user_id}}
+    )
+
+    return {
+        "user_id": user_id,
+        "final_response": result["messages"][-1].content,
+    }
+
+
+if __name__ == "__main__":
+    response = run_agent_chain("帮我查一下西安最近的天气，然后写个Python脚本分析气温趋势")
+    print("用户ID:", response["user_id"])
+    print("最终回复:", response["final_response"])
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> time
+<span class="token keyword">from</span> dotenv <span class="token keyword">import</span> load_dotenv
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>cache<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemoryCache
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>func <span class="token keyword">import</span> entrypoint<span class="token punctuation">,</span> task
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>types <span class="token keyword">import</span> CachePolicy
+load_dotenv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token decorator annotation punctuation">@task</span><span class="token punctuation">(</span>cache_policy<span class="token operator">=</span>CachePolicy<span class="token punctuation">(</span>ttl<span class="token operator">=</span><span class="token number">120</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">slow_add</span><span class="token punctuation">(</span>x<span class="token punctuation">:</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">int</span><span class="token punctuation">:</span>
+    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> x <span class="token operator">*</span> <span class="token number">2</span>
+
+
+<span class="token decorator annotation punctuation">@entrypoint</span><span class="token punctuation">(</span>cache<span class="token operator">=</span>InMemoryCache<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span>inputs<span class="token punctuation">:</span> <span class="token builtin">dict</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token builtin">dict</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">,</span> <span class="token builtin">int</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+    result1 <span class="token operator">=</span>  slow_add<span class="token punctuation">(</span>inputs<span class="token punctuation">[</span><span class="token string">"x"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>result<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    result2 <span class="token operator">=</span>  slow_add<span class="token punctuation">(</span>inputs<span class="token punctuation">[</span><span class="token string">"x"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>result<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"result1"</span><span class="token punctuation">:</span> result1<span class="token punctuation">,</span> <span class="token string">"result2"</span><span class="token punctuation">:</span> result2<span class="token punctuation">}</span>
+
+
+<span class="token keyword">for</span> chunk <span class="token keyword">in</span> main<span class="token punctuation">.</span>stream<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"x"</span><span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">}</span><span class="token punctuation">,</span> stream_mode<span class="token operator">=</span><span class="token string">"updates"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>chunk<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 
                 
             </div>
@@ -1634,7 +1803,7 @@ new Valine({
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">210.4k</span>&nbsp;字
+                class="white-color">212.9k</span>&nbsp;字
             
             
             

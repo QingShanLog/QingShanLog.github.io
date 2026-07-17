@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="持久化执行-langGraph, luckyzmj 计算机 网络安全 渗透测试">
+    <meta name="keywords" content="内存-langGraph, luckyzmj 计算机 网络安全 渗透测试">
     <meta name="description" content="本科 | 计算机科学与技术 | 网络安全">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>持久化执行-langGraph | Luckey</title>
+    <title>内存-langGraph | Luckey</title>
 
     <link rel="icon" type="image/jpeg" href="https://s1.ax1x.com/2020/05/17/YR20js.jpg">
 
@@ -510,12 +510,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://pic.3gbizhi.com/uploadmark/20260615/869ab44c5b1c2caaa1fceec73d257869.webp')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://upload-bbs.miyoushe.com/upload/2024/07/09/247364438/dbeba8ef3d93a4b86b74c080010e3f5e_8407127069598351562.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">持久化执行-langGraph</h1>
+                    <h1 class="description center-align post-title">内存-langGraph</h1>
                 </div>
             </div>
         </div>
@@ -652,21 +652,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2026-07-10
+                    2026-07-15
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-07-10
+                    2026-07-17
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.3k
+                    1.9k
                 </div>
                 
 
@@ -691,164 +691,278 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p><strong>持久化执行（Durable execution）</strong> 是一种技术，进程或工作流可以在关键点保存进度，从而允许暂停并在稍后从中断处精确恢复。这在需要 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/interrupts">人机协作（human-in-the-loop）</a> 的场景中尤为有用，用户可以在继续之前检查、验证或修改流程；它也适用于可能遇到中断或错误（例如 LLM 调用超时）的长耗时任务。通过保留已完成的工作，持久化执行使流程能够在无需重新处理先前步骤的情况下恢复——即使是在很长一段时间（例如一周）之后。LangGraph 内置的 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence">持久化（persistence）</a> 层为工作流提供了持久化执行能力，确保每个执行步骤的状态都被保存到持久化存储中。该功能保证了如果工作流被中断——无论是由于系统故障还是 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/interrupts">人机协作</a> 交互——它都可以从最后记录的状态恢复。</p>
-<h1 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h1><p>要在 LangGraph 中利用持久化执行，您需要：</p>
-<ol>
-<li>通过指定一个用于保存工作流进度的 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence#checkpointer-libraries">检查点库（checkpointer）</a> 来在工作流中启用 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence">持久化</a>。</li>
-<li>在执行工作流时指定一个 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence#threads">线程标识符（thread identifier）</a>。这将跟踪特定工作流实例的执行历史。</li>
-<li>将任何非确定性操作（如随机数生成）或具有副作用的操作（如文件写入、API 调用）封装在 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/func/task">任务</a> 中。这可确保工作流恢复时，不会为该次运行重复执行这些操作，而是从持久化层获取结果。有关更多信息，请参阅 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/durable-execution#determinism-and-consistent-replay">确定性与一致性重放</a>。</li>
-</ol>
-<h1 id="确定性与一致性重放"><a href="#确定性与一致性重放" class="headerlink" title="确定性与一致性重放"></a>确定性与一致性重放</h1><p>当您恢复工作流运行时，代码并<strong>不会</strong>从停止的<strong>同一行代码</strong>处恢复；相反，它会确定一个合适的 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/durable-execution#starting-points-for-resuming-workflows">起点</a>，从该起点开始继续执行。这意味着工作流将从 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/durable-execution#starting-points-for-resuming-workflows">起点</a> 开始重放所有步骤，直到到达停止的位置。</p>
-<p>因此，在编写用于持久化执行的工作流时，必须将任何非确定性操作（如随机数生成）和任何具有副作用的操作（如文件写入、API 调用）封装在 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/functional-api#task">任务</a> 或 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#nodes">节点</a> 中。</p>
-<p>为确保工作流具有确定性且可一致性地重放，请遵循以下准则：</p>
+                <h1 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h1><p>AI 应用程序需要 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/concepts/memory">记忆</a> 功能以便在多次交互中共享上下文。在 LangGraph 中，你可以添加两种类型的记忆：</p>
 <ul>
-<li><strong>避免重复工作</strong>：如果一个 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#nodes">节点</a> 包含多个带有副作用的操作（如日志记录、文件写入或网络调用），请将每个操作封装在单独的 <strong>任务</strong> 中。这确保了当工作流恢复时，这些操作不会重复执行，其结果将从持久化层中检索。</li>
-<li><strong>封装非确定性操作</strong>：将任何可能产生非确定性结果的代码（如随机数生成）封装在 <strong>任务</strong> 或 <strong>节点</strong> 中。这确保了在恢复时，工作流会遵循完全相同的已记录顺序和结果。</li>
-<li><strong>使用幂等操作</strong>：尽可能确保副作用（如 API 调用、文件写入）是幂等的。这意味着如果操作在工作流故障后重试，其效果与第一次执行时相同。这对于导致数据写入的操作尤为重要。如果一个 <strong>任务</strong> 开始但未能成功完成，工作流的恢复将重新运行该 <strong>任务</strong>，并依赖已记录的结果来保持一致性。请使用幂等键或验证现有结果以避免非预期的重复，从而确保平滑且可预测的工作流执行。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#add-short-term-memory">添加短期记忆</a>作为代理 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#state">状态 (state)</a> 的一部分，以实现多轮对话。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#add-long-term-memory">添加长期记忆</a>，用于在不同会话间存储特定于用户或应用程序的数据。</li>
 </ul>
-<p>有关需要避免的陷阱示例，请参阅函数式 API 中的 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/functional-api#common-pitfalls">常见陷阱（Common Pitfalls）</a> 部分，其中展示了如何使用 <strong>任务</strong> 构建代码以避免这些问题。同样的原则也适用于 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/graph/state/StateGraph">StateGraph (Graph API)</a>。</p>
-<h1 id="持久化模式"><a href="#持久化模式" class="headerlink" title="持久化模式"></a>持久化模式</h1><p>LangGraph 支持三种持久化模式，允许您根据应用程序的要求平衡性能和数据一致性。较高的持久化模式会为工作流执行增加更多开销。您可以在调用任何图执行方法时指定持久化模式：</p>
-<pre class="line-numbers language-none"><code class="language-none">graph.stream(
-    {"input": "test"},
-    durability="sync"
-)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="添加短期记忆"><a href="#添加短期记忆" class="headerlink" title="添加短期记忆"></a>添加短期记忆</h1><p><strong>短期</strong>记忆（线程级 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/persistence">持久化</a>）使代理能够跟踪多轮对话。要添加短期记忆：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemorySaver  
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> StateGraph
 
-<p>持久化模式按持久化程度从低到高排列如下：</p>
-<ul>
-<li><code>"exit"</code>：LangGraph 仅在图执行退出时（无论是成功、出错还是因人机协作中断）才持久化更改。这为长期运行的图提供了最佳性能，但意味着不会保存中间状态，因此无法从执行过程中发生的系统故障（如进程崩溃）中恢复。</li>
-<li><code>"async"</code>：LangGraph 在执行下一步的同时异步持久化更改。这提供了良好的性能和持久性，但如果进程在执行过程中崩溃，存在少量无法写入检查点的风险。</li>
-<li><code>"sync"</code>：LangGraph 在开始下一步之前同步持久化更改。这确保了 LangGraph 在继续执行之前写入每个检查点，以牺牲一定的性能开销为代价，提供了极高的持久性。</li>
-</ul>
-<h1 id="在节点中使用任务"><a href="#在节点中使用任务" class="headerlink" title="在节点中使用任务"></a>在节点中使用任务</h1><p>如果一个 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#nodes">节点</a> 包含多个操作，您可能会发现将每个操作转换为 <strong>任务</strong> 比将操作重构为独立节点更容易。</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span> NotRequired
-<span class="token keyword">from</span> typing_extensions <span class="token keyword">import</span> TypedDict
-<span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>uuid <span class="token keyword">import</span> uuid7
-
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemorySaver
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>func <span class="token keyword">import</span> task
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> START<span class="token punctuation">,</span> END
-<span class="token keyword">import</span> requests
-
-<span class="token comment"># Define a TypedDict to represent the state</span>
-<span class="token keyword">class</span> <span class="token class-name">State</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    urls<span class="token punctuation">:</span> <span class="token builtin">list</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">]</span>
-    result<span class="token punctuation">:</span> NotRequired<span class="token punctuation">[</span><span class="token builtin">list</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
-
-
-<span class="token decorator annotation punctuation">@task</span>
-<span class="token keyword">def</span> <span class="token function">_make_request</span><span class="token punctuation">(</span>url<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token triple-quoted-string string">"""Make a request."""</span>
-    <span class="token keyword">return</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>text<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">100</span><span class="token punctuation">]</span>
-
-<span class="token keyword">def</span> <span class="token function">call_api</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> State<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token triple-quoted-string string">"""Example node that makes an API request."""</span>
-    requests <span class="token operator">=</span> <span class="token punctuation">[</span>_make_request<span class="token punctuation">(</span>url<span class="token punctuation">)</span> <span class="token keyword">for</span> url <span class="token keyword">in</span> state<span class="token punctuation">[</span><span class="token string">'urls'</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
-    results <span class="token operator">=</span> <span class="token punctuation">[</span>request<span class="token punctuation">.</span>result<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">for</span> request <span class="token keyword">in</span> requests<span class="token punctuation">]</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-        <span class="token string">"results"</span><span class="token punctuation">:</span> results
-    <span class="token punctuation">}</span>
-
-<span class="token comment"># Create a StateGraph builder and add a node for the call_api function</span>
-builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
-builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"call_api"</span><span class="token punctuation">,</span> call_api<span class="token punctuation">)</span>
-
-<span class="token comment"># Connect the start and end nodes to the call_api node</span>
-builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"call_api"</span><span class="token punctuation">)</span>
-builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span><span class="token string">"call_api"</span><span class="token punctuation">,</span> END<span class="token punctuation">)</span>
-
-<span class="token comment"># Specify a checkpointer</span>
 checkpointer <span class="token operator">=</span> InMemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-<span class="token comment"># Compile the graph with the checkpointer</span>
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
 graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span>
 
-<span class="token comment"># Define a config with a thread ID.</span>
-thread_id <span class="token operator">=</span> <span class="token builtin">str</span><span class="token punctuation">(</span>uuid7<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-config <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> thread_id<span class="token punctuation">}</span><span class="token punctuation">}</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+    <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"hi! i am Bob"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="生产环境中使用"><a href="#生产环境中使用" class="headerlink" title="生产环境中使用"></a>生产环境中使用</h2><p>在生产中，使用由数据库支持的检查点器</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>postgres <span class="token keyword">import</span> PostgresSaver
+
+DB_URI <span class="token operator">=</span> <span class="token string">"postgresql://postgres:postgres@localhost:5442/postgres?sslmode=disable"</span>
+<span class="token keyword">with</span> PostgresSaver<span class="token punctuation">.</span>from_conn_string<span class="token punctuation">(</span>DB_URI<span class="token punctuation">)</span> <span class="token keyword">as</span> checkpointer<span class="token punctuation">:</span>
+    builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
+    graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="在子图中使用"><a href="#在子图中使用" class="headerlink" title="在子图中使用"></a>在子图中使用</h2><p>如果你的图包含 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs">子图</a>，你只需在编译父图时提供检查点存储器即可。LangGraph 会自动将检查点存储器传递给子图。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> START<span class="token punctuation">,</span> StateGraph
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemorySaver
+<span class="token keyword">from</span> typing <span class="token keyword">import</span> TypedDict
+
+<span class="token keyword">class</span> <span class="token class-name">State</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    foo<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token comment"># Subgraph</span>
+
+<span class="token keyword">def</span> <span class="token function">subgraph_node_1</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> State<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"foo"</span><span class="token punctuation">:</span> state<span class="token punctuation">[</span><span class="token string">"foo"</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token string">"bar"</span><span class="token punctuation">}</span>
+
+subgraph_builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>subgraph_node_1<span class="token punctuation">)</span>
+subgraph_builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"subgraph_node_1"</span><span class="token punctuation">)</span>
+subgraph <span class="token operator">=</span> subgraph_builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Parent graph</span>
+
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"node_1"</span><span class="token punctuation">,</span> subgraph<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"node_1"</span><span class="token punctuation">)</span>
+
+checkpointer <span class="token operator">=</span> InMemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>你可以配置子图特定的检查点行为。详细信息请参阅 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-subgraphs#subgraph-persistence">子图持久化</a>，了解包括中断支持和有状态延续在内的持久化级别。</p>
+<pre class="line-numbers language-none"><code class="language-none">subgraph_builder = StateGraph(...)
+subgraph = subgraph_builder.compile(checkpointer=True)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h1 id="添加长期记忆"><a href="#添加长期记忆" class="headerlink" title="添加长期记忆"></a>添加长期记忆</h1><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>store<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemoryStore  
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> StateGraph
+
+store <span class="token operator">=</span> InMemoryStore<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>store<span class="token operator">=</span>store<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="在节点内访问存储"><a href="#在节点内访问存储" class="headerlink" title="在节点内访问存储"></a>在节点内访问存储</h2><p>一旦你编译了一个带有存储（store）的图，LangGraph 会自动将该存储注入到你的节点函数中。访问存储的推荐方式是通过 <code>Runtime</code> 对象。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> dataclasses <span class="token keyword">import</span> dataclass
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>runtime <span class="token keyword">import</span> Runtime
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> MessagesState<span class="token punctuation">,</span> START
+<span class="token keyword">import</span> uuid
+
+<span class="token decorator annotation punctuation">@dataclass</span>
+<span class="token keyword">class</span> <span class="token class-name">Context</span><span class="token punctuation">:</span>
+    user_id<span class="token punctuation">:</span> <span class="token builtin">str</span>
+
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">call_model</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> MessagesState<span class="token punctuation">,</span> runtime<span class="token punctuation">:</span> Runtime<span class="token punctuation">[</span>Context<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    user_id <span class="token operator">=</span> runtime<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id  
+    namespace <span class="token operator">=</span> <span class="token punctuation">(</span>user_id<span class="token punctuation">,</span> <span class="token string">"memories"</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># Search for relevant memories</span>
+    memories <span class="token operator">=</span> <span class="token keyword">await</span> runtime<span class="token punctuation">.</span>store<span class="token punctuation">.</span>asearch<span class="token punctuation">(</span>
+        namespace<span class="token punctuation">,</span> query<span class="token operator">=</span>state<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>content<span class="token punctuation">,</span> limit<span class="token operator">=</span><span class="token number">3</span>
+    <span class="token punctuation">)</span>
+    info <span class="token operator">=</span> <span class="token string">"\n"</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>d<span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token string">"data"</span><span class="token punctuation">]</span> <span class="token keyword">for</span> d <span class="token keyword">in</span> memories<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># ... Use memories in model call</span>
+
+    <span class="token comment"># Store a new memory</span>
+    <span class="token keyword">await</span> runtime<span class="token punctuation">.</span>store<span class="token punctuation">.</span>aput<span class="token punctuation">(</span>
+        namespace<span class="token punctuation">,</span> <span class="token builtin">str</span><span class="token punctuation">(</span>uuid<span class="token punctuation">.</span>uuid4<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"User prefers dark mode"</span><span class="token punctuation">}</span>
+    <span class="token punctuation">)</span>
+
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>MessagesState<span class="token punctuation">,</span> context_schema<span class="token operator">=</span>Context<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>call_model<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"call_model"</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>store<span class="token operator">=</span>store<span class="token punctuation">)</span>
+
+<span class="token comment"># Pass context at invocation time</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>
+    <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"hi"</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    context<span class="token operator">=</span>Context<span class="token punctuation">(</span>user_id<span class="token operator">=</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="生产环境中使用-1"><a href="#生产环境中使用-1" class="headerlink" title="生产环境中使用"></a>生产环境中使用</h2><p>在生产环境中，请使用以数据库为后端的存储。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>store<span class="token punctuation">.</span>postgres <span class="token keyword">import</span> PostgresStore
+
+DB_URI <span class="token operator">=</span> <span class="token string">"postgresql://postgres:postgres@localhost:5442/postgres?sslmode=disable"</span>
+<span class="token keyword">with</span> PostgresStore<span class="token punctuation">.</span>from_conn_string<span class="token punctuation">(</span>DB_URI<span class="token punctuation">)</span> <span class="token keyword">as</span> store<span class="token punctuation">:</span>
+    builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
+    graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>store<span class="token operator">=</span>store<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="使用语义搜索"><a href="#使用语义搜索" class="headerlink" title="使用语义搜索"></a>使用语义搜索</h2><p>在图的记忆存储中启用语义搜索，让图代理能够通过语义相似度搜索存储中的项目。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>embeddings <span class="token keyword">import</span> init_embeddings
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>store<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemoryStore
+
+<span class="token comment"># Create store with semantic search enabled</span>
+embeddings <span class="token operator">=</span> init_embeddings<span class="token punctuation">(</span><span class="token string">"openai:text-embedding-3-small"</span><span class="token punctuation">)</span>
+store <span class="token operator">=</span> InMemoryStore<span class="token punctuation">(</span>
+    index<span class="token operator">=</span><span class="token punctuation">{</span>
+        <span class="token string">"embed"</span><span class="token punctuation">:</span> embeddings<span class="token punctuation">,</span>
+        <span class="token string">"dims"</span><span class="token punctuation">:</span> <span class="token number">1536</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">)</span>
+
+store<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token string">"user_123"</span><span class="token punctuation">,</span> <span class="token string">"memories"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"1"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">"text"</span><span class="token punctuation">:</span> <span class="token string">"I love pizza"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+store<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token string">"user_123"</span><span class="token punctuation">,</span> <span class="token string">"memories"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">"text"</span><span class="token punctuation">:</span> <span class="token string">"I am a plumber"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+items <span class="token operator">=</span> store<span class="token punctuation">.</span>search<span class="token punctuation">(</span>
+    <span class="token punctuation">(</span><span class="token string">"user_123"</span><span class="token punctuation">,</span> <span class="token string">"memories"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> query<span class="token operator">=</span><span class="token string">"I'm hungry"</span><span class="token punctuation">,</span> limit<span class="token operator">=</span><span class="token number">1</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="管理短期记忆"><a href="#管理短期记忆" class="headerlink" title="管理短期记忆"></a>管理短期记忆</h1><p>启用<a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#add-short-term-memory">短期记忆</a>后，长对话可能会超出 LLM 的上下文窗口。常见的解决方案有：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#trim-messages">裁剪消息</a>：删除前 N 条或后 N 条消息（在调用 LLM 之前）</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#delete-messages">从 LangGraph 状态中永久删除消息</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#summarize-messages">总结消息</a>：总结历史记录中的早期消息并将其替换为摘要</li>
+<li><a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/add-memory#manage-checkpoints">管理检查点</a>以存储和检索消息历史记录</li>
+<li>自定义策略（例如，消息过滤等）</li>
+</ul>
+<p>这使得代理可以跟踪对话，而不会超出 LLM 的上下文窗口。    </p>
+<h2 id="截断消息"><a href="#截断消息" class="headerlink" title="截断消息"></a>截断消息</h2><p>大多数 LLM 都有支持的最大上下文窗口（以 token 计算）。决定何时截断消息的一种方法是计算消息历史记录中的 token 数，并在接近限制时进行截断。如果你正在使用 LangChain，可以使用消息裁剪工具并指定要保留的 token 数量，以及处理边界时使用的 <code>strategy</code>（例如，保留最后的 <code>max_tokens</code>）。要裁剪消息历史记录，请使用 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langchain-core/messages/utils/trim_messages"><code>trim_messages</code></a> 函数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>messages<span class="token punctuation">.</span>utils <span class="token keyword">import</span> <span class="token punctuation">(</span>
+    trim_messages<span class="token punctuation">,</span>
+    count_tokens_approximately  
+<span class="token punctuation">)</span>
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>chat_models <span class="token keyword">import</span> init_chat_model
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> START<span class="token punctuation">,</span> MessagesState
+
+model <span class="token operator">=</span> init_chat_model<span class="token punctuation">(</span><span class="token string">"claude-sonnet-4-6"</span><span class="token punctuation">)</span>
+summarization_model <span class="token operator">=</span> model<span class="token punctuation">.</span>bind<span class="token punctuation">(</span>max_tokens<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">call_model</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> MessagesState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    messages <span class="token operator">=</span> trim_messages<span class="token punctuation">(</span>
+        state<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        strategy<span class="token operator">=</span><span class="token string">"last"</span><span class="token punctuation">,</span>
+        token_counter<span class="token operator">=</span>count_tokens_approximately<span class="token punctuation">,</span>
+        max_tokens<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">,</span>
+        start_on<span class="token operator">=</span><span class="token string">"human"</span><span class="token punctuation">,</span>
+        end_on<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">"human"</span><span class="token punctuation">,</span> <span class="token string">"tool"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+    response <span class="token operator">=</span> model<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>messages<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>response<span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+checkpointer <span class="token operator">=</span> InMemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span>
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>MessagesState<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>call_model<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"call_model"</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span>
+
+config <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"hi, my name is bob"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"write a short poem about cats"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"now do the same but for dogs"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+final_response <span class="token operator">=</span> graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"what's my name?"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+
+final_response<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>pretty_print<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="删除消息"><a href="#删除消息" class="headerlink" title="删除消息"></a>删除消息</h2><p>你可以从图状态中删除消息以管理消息历史记录。当你想要删除特定消息或清除整个消息历史记录时，这非常有用。要从图状态中删除消息，可以使用 <code>RemoveMessage</code>。为了使 <code>RemoveMessage</code> 生效，你需要使用带有 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/graph/message/add_messages"><code>add_messages</code></a> <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#reducers">归约器 (reducer)</a> 的状态键，例如 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#messagesstate"><code>MessagesState</code></a>。删除特定消息：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langchain<span class="token punctuation">.</span>messages <span class="token keyword">import</span> RemoveMessage  
+
+<span class="token keyword">def</span> <span class="token function">delete_messages</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    messages <span class="token operator">=</span> state<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span>
+    <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>messages<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">2</span><span class="token punctuation">:</span>
+        <span class="token comment"># remove the earliest two messages</span>
+        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>RemoveMessage<span class="token punctuation">(</span><span class="token builtin">id</span><span class="token operator">=</span>m<span class="token punctuation">.</span><span class="token builtin">id</span><span class="token punctuation">)</span> <span class="token keyword">for</span> m <span class="token keyword">in</span> messages<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>删除<strong>所有</strong>消息</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph<span class="token punctuation">.</span>message <span class="token keyword">import</span> REMOVE_ALL_MESSAGES  
+
+<span class="token keyword">def</span> <span class="token function">delete_messages</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>RemoveMessage<span class="token punctuation">(</span><span class="token builtin">id</span><span class="token operator">=</span>REMOVE_ALL_MESSAGES<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="总结消息"><a href="#总结消息" class="headerlink" title="总结消息"></a>总结消息</h2><p>如上所示，裁剪或删除消息的问题在于你可能会因为清空消息队列而丢失信息。因此，一些应用程序受益于一种更复杂的方案，即使用聊天模型来总结消息历史记录。</p>
+<p>提示词工程和编排逻辑可用于总结消息历史记录。例如，在 LangGraph 中，你可以扩展 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api#working-with-messages-in-graph-state"><code>MessagesState</code></a> 以包含一个 <code>summary</code> 键：</p>
+<pre class="line-numbers language-none"><code class="language-none">from langgraph.graph import MessagesState
+class State(MessagesState):
+    summary: str<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>然后，你可以生成聊天历史的摘要，并将现有的摘要作为上下文用于生成下一个摘要。此 <code>summarize_conversation</code> 节点可以在 <code>messages</code> 状态键中累积一定数量的消息后进行调用。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span> Any<span class="token punctuation">,</span> TypedDict
+
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>chat_models <span class="token keyword">import</span> init_chat_model
+<span class="token keyword">from</span> langchain<span class="token punctuation">.</span>messages <span class="token keyword">import</span> AnyMessage
+<span class="token keyword">from</span> langchain_core<span class="token punctuation">.</span>messages<span class="token punctuation">.</span>utils <span class="token keyword">import</span> count_tokens_approximately
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>graph <span class="token keyword">import</span> StateGraph<span class="token punctuation">,</span> START<span class="token punctuation">,</span> MessagesState
+<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>checkpoint<span class="token punctuation">.</span>memory <span class="token keyword">import</span> InMemorySaver
+<span class="token keyword">from</span> langmem<span class="token punctuation">.</span>short_term <span class="token keyword">import</span> SummarizationNode<span class="token punctuation">,</span> RunningSummary  
+
+model <span class="token operator">=</span> init_chat_model<span class="token punctuation">(</span><span class="token string">"claude-sonnet-4-6"</span><span class="token punctuation">)</span>
+summarization_model <span class="token operator">=</span> model<span class="token punctuation">.</span>bind<span class="token punctuation">(</span>max_tokens<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">State</span><span class="token punctuation">(</span>MessagesState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    context<span class="token punctuation">:</span> <span class="token builtin">dict</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">,</span> RunningSummary<span class="token punctuation">]</span>
+
+<span class="token keyword">class</span> <span class="token class-name">LLMInputState</span><span class="token punctuation">(</span>TypedDict<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    summarized_messages<span class="token punctuation">:</span> <span class="token builtin">list</span><span class="token punctuation">[</span>AnyMessage<span class="token punctuation">]</span>
+    context<span class="token punctuation">:</span> <span class="token builtin">dict</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">,</span> RunningSummary<span class="token punctuation">]</span>
+
+summarization_node <span class="token operator">=</span> SummarizationNode<span class="token punctuation">(</span>
+    token_counter<span class="token operator">=</span>count_tokens_approximately<span class="token punctuation">,</span>
+    model<span class="token operator">=</span>summarization_model<span class="token punctuation">,</span>
+    max_tokens<span class="token operator">=</span><span class="token number">256</span><span class="token punctuation">,</span>
+    max_tokens_before_summary<span class="token operator">=</span><span class="token number">256</span><span class="token punctuation">,</span>
+    max_summary_tokens<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">call_model</span><span class="token punctuation">(</span>state<span class="token punctuation">:</span> LLMInputState<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    response <span class="token operator">=</span> model<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>state<span class="token punctuation">[</span><span class="token string">"summarized_messages"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>response<span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+checkpointer <span class="token operator">=</span> InMemorySaver<span class="token punctuation">(</span><span class="token punctuation">)</span>
+builder <span class="token operator">=</span> StateGraph<span class="token punctuation">(</span>State<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span>call_model<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_node<span class="token punctuation">(</span><span class="token string">"summarize"</span><span class="token punctuation">,</span> summarization_node<span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span>START<span class="token punctuation">,</span> <span class="token string">"summarize"</span><span class="token punctuation">)</span>
+builder<span class="token punctuation">.</span>add_edge<span class="token punctuation">(</span><span class="token string">"summarize"</span><span class="token punctuation">,</span> <span class="token string">"call_model"</span><span class="token punctuation">)</span>
+graph <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>checkpointer<span class="token operator">=</span>checkpointer<span class="token punctuation">)</span>
 
 <span class="token comment"># Invoke the graph</span>
-graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"urls"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"https://www.example.com"</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+config <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"hi, my name is bob"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"write a short poem about cats"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"now do the same but for dogs"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
+final_response <span class="token operator">=</span> graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"messages"</span><span class="token punctuation">:</span> <span class="token string">"what's my name?"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> config<span class="token punctuation">)</span>
 
-<h1 id="恢复工作流"><a href="#恢复工作流" class="headerlink" title="恢复工作流"></a>恢复工作流</h1><p>一旦在工作流中启用了持久化执行，您可以在以下场景中恢复执行：</p>
-<ul>
-<li><strong>暂停和恢复工作流：</strong> 使用 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/types/interrupt">interrupt</a> 函数在特定点暂停工作流，并使用 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/types/Command"><code>Command</code></a> 原语使用更新后的状态恢复它。详见 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/interrupts"><strong>中断（Interrupts）</strong></a>。</li>
-<li><strong>从故障中恢复：</strong> 在异常（例如 LLM 提供商中断）发生后，自动从上一个成功的检查点恢复工作流。这通过提供 <code>None</code> 作为输入值并使用相同的线程标识符来执行工作流（参见函数式 API 的此 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/use-functional-api#resuming-after-an-error">示例</a>）。</li>
-</ul>
-<h1 id="恢复工作流的起点"><a href="#恢复工作流的起点" class="headerlink" title="恢复工作流的起点"></a>恢复工作流的起点</h1><ul>
-<li>如果您使用的是 <a target="_blank" rel="noopener" href="https://docs.langchain.org.cn/oss/python/langgraph/graph-api">StateGraph (Graph API)</a>，起点是执行停止所在的 <strong>节点（node）</strong> 的开头。</li>
-<li>如果您在节点内进行子图调用，起点将是调用该子图并被挂起的 <strong>父节点（parent node）</strong>。在子图内部，起点将是执行停止所在的特定 <strong>节点</strong>。</li>
-<li>如果您使用的是函数式 API，起点是执行停止所在的 <strong>入口点（entrypoint）</strong> 的开头。</li>
-</ul>
-<h1 id="优雅停机"><a href="#优雅停机" class="headerlink" title="优雅停机"></a>优雅停机</h1><p>优雅停机（Graceful shutdown）允许您在当前超步骤（superstep）完成后协作地停止正在进行的图运行，并保存可恢复的检查点。这对于处理 SIGTERM 信号或任何需要回收资源而又不丢失工作的外部监控器非常有用。创建一个 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/runtime/RunControl"><code>RunControl</code></a> 并将其作为 <code>control=</code> 参数传递给 <code>invoke</code> 或 <code>stream</code>。从任何线程调用 <code>request_drain()</code> 以发出应停止运行的信号：</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>runtime <span class="token keyword">import</span> RunControl
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>errors <span class="token keyword">import</span> GraphDrained
+final_response<span class="token punctuation">[</span><span class="token string">"messages"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>pretty_print<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"\nSummary:"</span><span class="token punctuation">,</span> final_response<span class="token punctuation">[</span><span class="token string">"context"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"running_summary"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>summary<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-control <span class="token operator">=</span> RunControl<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<h1 id="管理检查点"><a href="#管理检查点" class="headerlink" title="管理检查点"></a>管理检查点</h1><h3 id="查看线程状态"><a href="#查看线程状态" class="headerlink" title="查看线程状态"></a>查看线程状态</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python">config <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">,</span>
+        <span class="token comment"># optionally provide an ID for a specific checkpoint,</span>
+        <span class="token comment"># otherwise the latest checkpoint is shown</span>
+        <span class="token comment"># "checkpoint_id": "1f029ca3-1f5b-6704-8004-820c16b69a5a"  #</span>
 
-<span class="token comment"># In a signal handler or supervisor:</span>
-<span class="token comment"># control.request_drain("sigterm")</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+graph<span class="token punctuation">.</span>get_state<span class="token punctuation">(</span>config<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<span class="token keyword">try</span><span class="token punctuation">:</span>
-    result <span class="token operator">=</span> graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>inputs<span class="token punctuation">,</span> config<span class="token punctuation">,</span> control<span class="token operator">=</span>control<span class="token punctuation">)</span>
-<span class="token keyword">except</span> GraphDrained <span class="token keyword">as</span> e<span class="token punctuation">:</span>
-    <span class="token comment"># The graph stopped early and saved a checkpoint.</span>
-    <span class="token comment"># Resume later with the same config.</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"Drained: </span><span class="token interpolation"><span class="token punctuation">{</span>e<span class="token punctuation">.</span>reason<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="查看线程历史"><a href="#查看线程历史" class="headerlink" title="查看线程历史"></a>查看线程历史</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python">config <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">"configurable"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"thread_id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token builtin">list</span><span class="token punctuation">(</span>graph<span class="token punctuation">.</span>get_state_history<span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="语义"><a href="#语义" class="headerlink" title="语义"></a>语义</h2><p>清理（Drain）是协作式的，发生在超步骤之间，绝不会中断正在运行的工作。</p>
-<table>
-<thead>
-<tr>
-<th align="left">场景</th>
-<th align="left">行为</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">节点执行中</td>
-<td align="left">运行直至完成。清理在下一个超步骤生效。</td>
-</tr>
-<tr>
-<td align="left">带有重试策略的节点正在重试中</td>
-<td align="left">重试循环直至耗尽或成功。清理随后生效。</td>
-</tr>
-<tr>
-<td align="left">图在清理的同时自然完成</td>
-<td align="left">正常返回。检查 <code>control.drain_requested</code> 以区分正常运行。</td>
-</tr>
-<tr>
-<td align="left">仍有超步骤剩余</td>
-<td align="left">引发 <code>GraphDrained(reason)</code>。检查点已保存且可恢复。</td>
-</tr>
-<tr>
-<td align="left">子图请求清理</td>
-<td align="left"><code>GraphDrained</code> 会向上传递给父节点，并在其下一个超步骤边界处停止父节点。</td>
-</tr>
-</tbody></table>
-<h2 id="清理（Drain）后恢复"><a href="#清理（Drain）后恢复" class="headerlink" title="清理（Drain）后恢复"></a>清理（Drain）后恢复</h2><p>使用相同的 thread_id 调用 invoke(None, config) 来恢复已清理的运行。</p>
-<pre class="line-numbers language-none"><code class="language-none">result = graph.invoke(None, config)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="删除会话的所有检查点"><a href="#删除会话的所有检查点" class="headerlink" title="删除会话的所有检查点"></a>删除会话的所有检查点</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python">thread_id <span class="token operator">=</span> <span class="token string">"1"</span>
+checkpointer<span class="token punctuation">.</span>delete_thread<span class="token punctuation">(</span>thread_id<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
-<h2 id="在节点内读取清理状态"><a href="#在节点内读取清理状态" class="headerlink" title="在节点内读取清理状态"></a>在节点内读取清理状态</h2><p>通过 <code>runtime</code> 参数访问清理状态，以在到达超步骤边界之前调整节点行为。</p>
-<pre class="line-numbers language-none"><code class="language-none">from langgraph.runtime import Runtime
-
-async def my_node(state: State, runtime: Runtime) -&gt; State:
-    if runtime.drain_requested:
-        # Skip expensive work and return a minimal result
-        return {"status": "skipped", "reason": runtime.drain_reason}
-    return {"status": await do_work()}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="SIGTERM-钩子模式"><a href="#SIGTERM-钩子模式" class="headerlink" title="SIGTERM 钩子模式"></a>SIGTERM 钩子模式</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">mport signal
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>runtime <span class="token keyword">import</span> RunControl
-<span class="token keyword">from</span> langgraph<span class="token punctuation">.</span>errors <span class="token keyword">import</span> GraphDrained
-
-control <span class="token operator">=</span> RunControl<span class="token punctuation">(</span><span class="token punctuation">)</span>
-signal<span class="token punctuation">.</span>signal<span class="token punctuation">(</span>signal<span class="token punctuation">.</span>SIGTERM<span class="token punctuation">,</span> <span class="token keyword">lambda</span> <span class="token operator">*</span><span class="token keyword">_</span><span class="token punctuation">:</span> control<span class="token punctuation">.</span>request_drain<span class="token punctuation">(</span><span class="token string">"sigterm"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-<span class="token keyword">try</span><span class="token punctuation">:</span>
-    result <span class="token operator">=</span> graph<span class="token punctuation">.</span>invoke<span class="token punctuation">(</span>inputs<span class="token punctuation">,</span> config<span class="token punctuation">,</span> control<span class="token operator">=</span>control<span class="token punctuation">)</span>
-<span class="token keyword">except</span> GraphDrained <span class="token keyword">as</span> e<span class="token punctuation">:</span>
-    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string">"graph drained: %s"</span><span class="token punctuation">,</span> e<span class="token punctuation">.</span>reason<span class="token punctuation">)</span>
-    <span class="token comment"># Resume on next startup with the same config</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
+<h1 id="数据库管理"><a href="#数据库管理" class="headerlink" title="数据库管理"></a>数据库管理</h1><p>如果你正在使用任何基于数据库的持久化实现（例如 Postgres 或 Redis）来存储短期和/或长期记忆，在将其与数据库一起使用之前，你需要运行迁移以设置所需的架构。按照惯例，大多数特定于数据库的库会在检查点存储器或存储实例上定义一个 <code>setup()</code> 方法，用于运行所需的迁移。但是，你应该查阅你的 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langgraph/checkpoints/#langgraph.checkpoint.base.BaseCheckpointSaver"><code>BaseCheckpointSaver</code></a> 或 <a target="_blank" rel="noopener" href="https://reference.langchain.org.cn/python/langchain-core/stores/BaseStore"><code>BaseStore</code></a> 的特定实现，以确认确切的方法名称和用法。我们建议将运行迁移作为专门的部署步骤，或者你可以确保它们作为服务器启动的一部分运行。</p>
 
                 
             </div>
@@ -875,7 +989,7 @@ signal<span class="token punctuation">.</span>signal<span class="token punctuati
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://www.luckyzmj.cn/posts/e30e401f.html">http://www.luckyzmj.cn/posts/e30e401f.html</a>
+                    <a href="http://www.luckyzmj.cn/posts/72a33521.html">http://www.luckyzmj.cn/posts/72a33521.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1386,16 +1500,17 @@ new Valine({
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/826e6260.html">
+                <a href="/posts/72a33521.html">
                     <div class="card-image">
                         
-                        <img src="https://pic.3gbizhi.com/uploadmark/20260615/35351c97a263a1d593bdacf26c4f8439.webp" class="responsive-img" alt="中断-langGraph">
+                        <img src="https://upload-bbs.miyoushe.com/upload/2024/07/09/247364438/dbeba8ef3d93a4b86b74c080010e3f5e_8407127069598351562.jpg" class="responsive-img" alt="内存-langGraph">
                         
-                        <span class="card-title">中断-langGraph</span>
+                        <span class="card-title">内存-langGraph</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1405,9 +1520,9 @@ new Valine({
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-10
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-15
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -1416,6 +1531,7 @@ new Valine({
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1434,12 +1550,12 @@ new Valine({
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/404c2e08.html">
+                <a href="/posts/4888912.html">
                     <div class="card-image">
                         
-                        <img src="https://pic.3gbizhi.com/uploadmark/20260523/095f61278217016e52dbd4ff95fbc90d.webp" class="responsive-img" alt="持久化-langGraph">
+                        <img src="https://ts1.tc.mm.bing.net/th/id/R-C.7042339984e790d52dc7301895d13bb2?rik=QI5tY9voH7ybZw&riu=http%3a%2f%2fn.sinaimg.cn%2fsinakd20121%2f762%2fw1000h562%2f20231011%2fe596-5fc1e4b6981c043e7b69fcdda3c5661f.jpg&ehk=j%2bRYPWkKAZp3JG%2bIo351cCe40GTO%2b66VNXrEZyLphOw%3d&risl=&pid=ImgRaw&r=0" class="responsive-img" alt="容错性-langGraph">
                         
-                        <span class="card-title">持久化-langGraph</span>
+                        <span class="card-title">容错性-langGraph</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1450,7 +1566,7 @@ new Valine({
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-14
                             </span>
                         <span class="publish-author">
                             
